@@ -1,0 +1,17 @@
+<div id="comment-{{ comment.id }}" class="comment {% if comment.parent %}comment-reply{% endif %}">
+    <div class="d-flex">
+      <div>
+        <h5>{{ comment.full_name }} <a href="#" class="reply-btn" data-parent-id="{{ comment.id }}">Reply</a></h5>
+        <time>{{ comment.created_on|date:"M d, Y" }}</time>
+        <p>{{ comment.content|safe }}</p>
+      </div>
+    </div>
+  
+    {% if comment.replies.all %}
+      <div class="replies">
+        {% for reply in comment.replies.all %}
+          {% include "sajeksApp/comment_thread.html" with comment=reply %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
