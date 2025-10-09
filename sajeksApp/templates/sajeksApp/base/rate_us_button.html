@@ -1,0 +1,8 @@
+{% load static %}
+<link href="{% static 'sajeksApp/testimonial/style.css' %}" rel="stylesheet">
+
+{% comment %} rating button {% endcomment %}
+  <button id="rate-us-btn" class="rate-us-float-btn shadow-lg" 
+        onclick="document.getElementById('testimonial-popup-modal').style.display = 'flex';">
+      <i class="fas fa-star"></i> Rate Us
+  </button>

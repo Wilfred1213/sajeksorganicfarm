@@ -1,0 +1,79 @@
+{% extends 'sajeksApp/base/base.html' %}
+{% load static %}
+
+{% block title %} Sajeks Videos {% endblock %}
+{% block content %}
+<main class="main">
+
+    <section id="blog-posts-2" class="blog-posts-2 section">
+        <div class="container">
+            <div class="row gy-4">
+            
+                {% for homevideo in homevideos %}
+                <div class="col-lg-4">
+                    <article class="position-relative h-100">
+                        
+                        <div class="post-img position-relative overflow-hidden">
+                            <img src="{{ homevideo.pic.url }}" class="img-fluid" alt="Video Thumbnail">
+                                
+                            <a href="{% url 'video_details' homevideo.id %}" class="pulsating-play-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;">
+                                <span class="play"><i class="bi bi-play-fill"></i></span>
+                            </a>
+                        </div>
+                        
+                        <div class="meta d-flex align-items-end">
+                            <span class="post-date">VIDEO</span>
+                            </div>
+
+                        <div class="post-content d-flex flex-column">
+                            <h3 class="post-title">{{ homevideo.title }}</h3>
+                            <p>{{ homevideo.body|safe|truncatewords:20 }}</p>
+                            
+                            <a href="{% url 'video_details' homevideo.id %}" class="readmore stretched-link">
+                                <span>Watch Video</span><i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                        
+                    </article>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    {% comment %} pagination {% endcomment %}
+    <section id="blog-pagination" class="blog-pagination section">
+      <div class="container">
+          <div class="d-flex justify-content-center">
+              <ul>
+                  
+                  {# 1. Previous Button #}
+                  {% if homevideos.has_previous %}
+                      <li><a href="?page={{ homevideos.previous_page_number }}"><i class="bi bi-chevron-left"></i></a></li>
+                  {% else %}
+                      <li class="disabled"><a href="#"><i class="bi bi-chevron-left"></i></a></li>
+                  {% endif %}
+  
+                  {# 2. Page Numbers Loop #}
+                  {% for i in homevideos.paginator.page_range %}
+                      {% if homevideos.number == i %}
+                          <li class="active"><a href="#">{{ i }}</a></li>
+                      {% else %}
+                          <li><a href="?page={{ i }}">{{ i }}</a></li>
+                      {% endif %}
+                  {% endfor %}
+  
+                  {# 3. Next Button #}
+                  {% if homevideos.has_next %}
+                      <li><a href="?page={{ homevideos.next_page_number }}"><i class="bi bi-chevron-right"></i></a></li>
+                  {% else %}
+                      <li class="disabled"><a href="#"><i class="bi bi-chevron-right"></i></a></li>
+                  {% endif %}
+  
+              </ul>
+          </div>
+      </div>
+  </section>
+</main>
+{% endblock %}
+

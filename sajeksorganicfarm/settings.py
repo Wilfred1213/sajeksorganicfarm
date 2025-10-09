@@ -40,6 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'sajeksApp',
     'django_ckeditor_5',
+    'mathfilters',
+    'widget_tweaks',
+    'sajeksFooter',
+    
 ]
 
 # settings.py
@@ -110,6 +114,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                 # --- REGISTER YOUR CUSTOM PROCESSOR HERE ---
+                'sajeksApp.context_processors.testimonial_form_processor',
             ],
         },
     },

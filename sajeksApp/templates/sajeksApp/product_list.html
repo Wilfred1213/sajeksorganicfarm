@@ -1,0 +1,27 @@
+{% extends 'sajeksApp/base/base.html' %}
+{% load static %}
+
+
+{% block title %} Our Fresh Produce {% endblock %}
+
+{% block content %}
+<main class="main">
+
+    <div class="page-title dark-background" data-aos="fade" style="background-image: url({% static 'assets/img/page-title-bg.webp' %});">
+      <div class="container position-relative">
+        <h1>Fresh Produce</h1>
+        <nav class="breadcrumbs">
+          <ol>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li class="current">Produce</li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+    {% include 'sajeksApp/base/product_base.html' %}
+    {% include 'sajeksApp/base/pagination_base.html' %}
+    {% include 'sajeksApp/base/recent_blog.html' %}
+    
+  </main>
+{% endblock %}

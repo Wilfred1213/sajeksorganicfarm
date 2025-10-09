@@ -1,0 +1,196 @@
+{% extends 'sajeksApp/base/base.html' %}
+
+{% block title %}Message Detail - {{ msg.subject }}{% endblock %}
+
+
+{% block content %}
+<style>
+    /* ================================================= */
+/* MESSAGE DETAIL STYLES */
+/* ================================================= */
+
+.message-detail-card {
+    border: 1px solid #c8e6c9; /* Light green border */
+}
+
+/* Style for the sender information labels */
+.message-detail-card .text-muted.small {
+    color: #888 !important;
+    text-transform: uppercase;
+    font-size: 0.75rem !important;
+    letter-spacing: 0.5px;
+}
+
+/* Styling the main message block */
+.message-content {
+    background-color: #f8fcf8; /* Very light green background */
+    border-color: #e0f2f1 !important;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    white-space: pre-wrap; /* Preserves formatting/line breaks from user input */
+}
+
+/* Custom styling for the UNREAD indicator in the header */
+.mark-read-indicator {
+    /* Use a pulsating effect to draw attention to the fact that viewing has marked it as read */
+    animation: pulse-danger 1s infinite alternate;
+}
+
+/* Optional: Subtle animation for the Unread badge */
+@keyframes pulse-danger {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.02); opacity: 0.9; }
+}
+</style>
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col-lg-10 offset-lg-1">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="text-success display-6">
+                    <i class="fas fa-file-alt me-2"></i> Message Details
+                </h1>
+                
+                {# Button to go back to the list view #}
+                <a href="{% url 'contact_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Inbox
+                </a>
+            </div>
+
+            <div class="card shadow-lg border-0 message-detail-card">
+                
+                {# Card Header: Subject and Status #}
+                <div class="card-header bg-success text-white py-3 d-flex justify-content-between align-items-center">
+                    <h2 class="h4 mb-0 text-truncate">Subject: {{ msg.subject }}</h2>
+                    
+                    {# Aesthetic Status Badge #}
+                    {% if msg.status == False %}
+                        <span class="badge bg-white text-success fw-bold p-2">
+                            <i class="far fa-check-circle me-1"></i> Read
+                        </span>
+                    {% else %}
+                        <span class="badge bg-danger text-white fw-bold p-2 mark-read-indicator">
+                            <a href = "{% url 'mark_as_read' msg.id %}" ><i class="fas fa-exclamation-triangle me-1"></i> Mark as read</a>
+                        </span>
+                    {% endif %}
+                </div>
+
+                {# Card Body: Sender Information #}
+                <div class="card-body pb-0">
+                    <div class="row mb-4 border-bottom pb-3">
+                        <div class="col-md-4">
+                            <p class="mb-1 text-muted small">From:</p>
+                            <p class="fw-bold h6">{{ msg.name }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="mb-1 text-muted small">Email:</p>
+                            <p class="fw-bold h6">{{ msg.email }}</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="mb-1 text-muted small">Received:</p>
+                            <p class="fw-bold h6">{{ msg.posted_on|date:"M j, Y | H:i" }}</p>
+                        </div>
+                    </div>
+                    
+                    {# Message Content #}
+                    <h5 class="text-secondary mb-3"><i class="fas fa-comment-dots me-2"></i> Message:</h5>
+                    <div class="message-content p-3 border rounded mb-4">
+                        <p class="lead">{{ msg.message|safe }}</p>
+                    </div>
+                </div>
+
+                {# Card Footer: Actions (Optional "Mark Unread" or "Delete") #}
+                <div class="card-footer bg-light d-flex justify-content-end">
+                    {# Example Action Button (Requires a corresponding view/URL) #}
+                    <form action = "{% url 'delete_contact' msg.id %}" method="post" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm me-2" 
+                                onclick="return confirm('Are you sure you want to delete this message?');">
+                            <i class="fas fa-trash me-1"></i> Delete Message
+                        </button>
+                    </form>
+                    
+                    {# Optional: If you want a way to manually switch status back #}
+                    {% if message.status %}
+                        <a href="{% url 'contact_mark_unread' message.pk %}" class="btn btn-outline-warning btn-sm">
+                            <i class="fas fa-redo me-1"></i> Mark as Unread
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% comment %} confirmation dialogbox {% endcomment %}
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">
+                    <i class="fas fa-trash-alt me-2"></i> Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body text-center p-4">
+                <i class="fas fa-exclamation-triangle text-danger display-4 mb-3"></i>
+                <p class="lead">Are you sure you want to permanently delete this message?</p>
+                <p class="text-muted small">This action cannot be undone.</p>
+            </div>
+            
+            <div class="modal-footer justify-content-center border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                
+                {# This button is the one that will submit the actual form #}
+                <button type="submit" class="btn btn-danger" id="modalConfirmDeleteBtn">
+                    Yes, Delete it
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('confirmDeleteModal');
+    const confirmBtn = document.getElementById('modalConfirmDeleteBtn');
+    
+    // Listen for when any button with the class 'delete-trigger' is clicked
+    document.querySelectorAll('.delete-trigger').forEach(button => {
+        button.addEventListener('click', function() {
+            // 1. Get the delete URL from the clicked button's data attribute
+            const deleteUrl = this.getAttribute('data-delete-url');
+
+            // 2. IMPORTANT: Attach the delete URL to the confirmation button's click event
+            confirmBtn.onclick = function() {
+                // Instead of using a form, we'll dynamically submit a form or redirect
+                // The cleanest way is to create a small form dynamically and submit it.
+
+                let tempForm = document.createElement('form');
+                tempForm.action = deleteUrl;
+                tempForm.method = 'POST';
+                tempForm.style.display = 'none';
+
+                // Add CSRF token dynamically (CRITICAL for Django security)
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                let csrfInput = document.createElement('input');
+                csrfInput.setAttribute('type', 'hidden');
+                csrfInput.setAttribute('name', 'csrfmiddlewaretoken');
+                csrfInput.setAttribute('value', csrfToken);
+
+                tempForm.appendChild(csrfInput);
+                document.body.appendChild(tempForm);
+
+                tempForm.submit(); // Submit the form to the Django view
+                };
+            });
+        });
+    });
+
+</script>
+{% endblock %}

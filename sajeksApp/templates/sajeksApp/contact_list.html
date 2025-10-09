@@ -1,0 +1,84 @@
+{% extends 'sajeksApp/base/base.html' %}
+
+{% load static %}
+{% block title %}Admin Inbox | Messages{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        {# Centers the content and provides adequate space (lg-10 offset-lg-1) #}
+        <div class="col-lg-10 offset-lg-1">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="display-5 text-success">
+                    <i class="fas fa-envelope-open-text me-2"></i> User Messages
+                </h1>
+                {# This relies on the 'unread_count' context variable #}
+                <div class="alert alert-info py-2 px-3 m-0 shadow-sm">
+                    Total Unread: <strong class = "text-danger">{{ unread_count }}</strong>
+                </div>
+            </div>
+
+            <div class="message-list shadow-lg rounded-3">
+                
+                {% for contact in contacts %}
+                
+                {# Aesthetic: Use a distinct background color for unread messages (CSS handles the 'unread-message' class) #}
+                <div class="message-item p-3 border-bottom {% if not contact.status %}unread-message{% endif %}">
+                    <div class="row align-items-center">
+                        
+                        {# 1. Status Indicator and Subject (5 columns) #}
+                        <div class="col-md-5 d-flex align-items-center">
+                            {# Read/Unread Status Icon #}
+                            {% if not contact.status %}
+                                <i class="fas fa-circle text-danger me-2" title="Unread"></i>
+                            {% else %}
+                                <i class="far fa-circle text-success me-2" title="Read"></i>
+                            {% endif %}
+                            
+                            {# Subject (Bold if unread, uses text-truncate for responsiveness) #}
+                            <h5 class="mb-0 text-truncate {% if not contact.status %}fw-bold{% endif %}">
+                                {{ contact.subject }}
+                            </h5>
+                        </div>
+                        
+                        {# 2. Sender and Date (4 columns) #}
+                        <div class="col-md-4 text-muted small mt-2 mt-md-0">
+                            From: <strong class="text-dark">{{ contact.name }}</strong> ({{ contact.email }})
+                            <span class="d-block mt-1">
+                                <i class="far fa-clock"></i> {{ contact.posted_on|date:"M j, Y H:i" }}
+                            </span>
+                        </div>
+                        
+                        {# 3. Actions (3 columns, aligned right) #}
+                        {% if contact.status == True %}
+                        <div class="col-md-3 badge bg-danger text-success fw-bold p-2">
+                            <a href="{% url 'contact_detail' contact.id %}" class="btn btn-sm w-100 w-md-auto">
+                                Unread <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        {% else %}
+                        <div class="col-md-3 text-end mt-2 mt-md-0">
+                            <a href="{% url 'contact_detail' contact.id %}" class="btn btn-sm btn-outline-success w-100 w-md-auto">
+                                Read already! <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                        {% endif %}
+                        
+                    </div>
+                </div>
+                
+                {% empty %}
+                <div class="p-5 text-center text-muted">
+                    <i class="far fa-check-circle display-4 mb-3 text-success"></i>
+                    <p class="lead">Hooray! Your inbox is empty.</p>
+                </div>
+                {% endfor %}
+            </div>
+            {# Placeholder for Pagination #}
+            {# <div class="mt-4">{% include 'sajeksApp/includes/pagination.html' %}</div> #}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

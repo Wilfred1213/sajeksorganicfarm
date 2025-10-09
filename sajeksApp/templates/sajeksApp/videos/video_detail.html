@@ -1,0 +1,30 @@
+{% extends 'sajeksApp/base/base.html' %}
+{% load static %}
+
+{% block title %} Sajeks Blog Post {% endblock %}
+{% block content %}
+<section id="about-3" class="about-3 section">
+
+      <div class="container">
+        <div class="row gy-4 justify-content-between align-items-center">
+          <div class="col-lg-6 order-lg-2 position-relative" data-aos="zoom-out">
+            <img src="{{homevideos.pic.url}}" alt="Image" class="img-fluid">
+            <a href="{{homevideos.embed_url}}" class="glightbox pulsating-play-btn">
+              <span class="play"><i class="bi bi-play-fill"></i></span>
+            </a>
+          </div>
+          <div class="col-lg-5 order-lg-1" data-aos="fade-up" data-aos-delay="100">
+            <h2 class="content-title mb-4">{{homevideos.title}}</h2>
+            <p class="mb-4">
+              {{ homevideos.body}}
+            </p>
+            {% comment %} <ul class="list-unstyled list-check">
+              {{homevideos.list|safe}}
+            </ul> {% endcomment %}
+
+            <p><a href="{% url 'contact' %}" class="btn-cta">Get in touch</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+{% endblock %}

@@ -28,7 +28,11 @@
 
   <!-- Main CSS File -->
   <link href="{% static 'sajeksApp/assets/css/main.css' %}" rel="stylesheet">
+  {% comment %} <link href="{% static 'sajeksApp/assets/css/main.css' %}" rel="stylesheet"> {% endcomment %}
 
+  <link href="{% static 'sajeksApp/testimonial/about.css' %}" rel="stylesheet">
+  
+  {% comment %} {% include 'sajeksApp/base/footer_styling.html' %} {% endcomment %}
   <!-- =======================================================
   * Template Name: AgriCulture
   * Template URL: https://bootstrapmade.com/agriculture-bootstrap-website-template/
@@ -36,9 +40,128 @@
   * Author: BootstrapMade.com
   * License: https://bootstrapmade.com/license/
   ======================================================== -->
+  <style>
+    /* ================================================= */
+/* BEAUTIFIED MESSAGE NOTIFICATION BADGE STYLES */
+/* ================================================= */
+
+.message-badge {
+    /* Shape and Display */
+    display: inline-flex; 
+    align-items: center;
+    justify-content: center;
+    min-width: 20px; 
+    height: 18px; 
+    padding: 2px 6px; 
+    
+    /* Colors and Typography */
+    font-size: 11px; 
+    font-weight: 700;
+    line-height: 1; 
+    color: #ffffff;
+    background-color: #ff5252; /* Bright, modern red */
+    
+    /* Aesthetics and Depth */
+    border-radius: 9px; 
+    box-shadow: 0 1px 4px rgba(255, 82, 82, 0.6); 
+
+    /* Positioning: Lifts badge for a floating effect */
+    position: relative;
+    top: -5px; 
+    left: 4px; 
+    
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hover effect */
+.message-badge:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(255, 82, 82, 0.8); 
+}
+
+```css
+/* ================================================= */
+/* GLOBAL ALERT BANNER STYLES */
+/* ================================================= */
+
+#global-alerts-container {
+    /* Position fixed to ensure it stays visible regardless of scrolling */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1050; /* Needs to be higher than the fixed header (usually 1030) */
+    pointer-events: none; /* Allows clicks to pass through to the header/content below */
+}
+
+.global-alert-banner {
+    /* Base style for all alerts */
+    width: 100%;
+    border-radius: 0;
+    margin-bottom: 0; /* No space between multiple alerts */
+    text-align: center;
+    pointer-events: auto; /* Re-enables interaction for the alert itself (like closing) */
+    border-left: 5px solid; /* Aesthetic colored border */
+    font-size: 1rem;
+    padding: 1rem 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Custom color adjustments for different Django message tags */
+
+/* SUCCESS messages (e.g., green for positive feedback) */
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border-color: #c3e6cb;
+    border-left-color: #28a745;
+}
+
+/* ERROR messages (e.g., red for problems) */
+.alert-error, .alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+    border-left-color: #dc3545;
+}
+
+/* INFO messages (e.g., blue for general information) */
+.alert-info {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border-color: #bee5eb;
+    border-left-color: #17a2b8;
+}
+
+/* WARNING messages (e.g., yellow for caution) */
+.alert-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    border-color: #ffeeba;
+    border-left-color: #ffc107;
+}
+
+/* Ensure the close button is visible and correctly styled */
+.global-alert-banner .btn-close
+</style>
 </head>
 
 <body class="index-page">
+  <div id="global-alerts-container">
+      {% if messages %}
+          {% for message in messages %}
+              {# Assign custom classes based on message tag #}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show global-alert-banner" role="alert">
+                  <div class="container">
+                      <i class="fas fa-info-circle me-2"></i> {{ message }}
+                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+              </div>
+          {% endfor %}
+      {% endif %}
+  </div>
+    
 
   <header id="header" class="header d-flex align-items-center position-relative">
     <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
@@ -52,38 +175,35 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="{% url 'home' %}" class="active">Home</a></li>
-          <li><a href="about.html">About Us</a></li>
-          <li><a href="services.html">Our Services</a></li>
-          <li><a href="testimonials.html">Testimonials</a></li>
+          <li><a href="{% url 'about' %}">About Us</a></li>
+          <li><a href="{% url 'service' %}">Our Services</a></li>
+          <li><a href="{% url 'produce_list_view' %}">Our Products</a></li>
           <li><a href="{% url 'blog' %}">Blog</a></li>
-          <li class="dropdown"><a href="#"><span>Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-            <ul>
-              <li><a href="#">Dropdown 1</a></li>
-              <li class="dropdown"><a href="#"><span>Deep Dropdown</span> <i class="bi bi-chevron-down toggle-dropdown"></i></a>
-                <ul>
-                  <li><a href="#">Deep Dropdown 1</a></li>
-                  <li><a href="#">Deep Dropdown 2</a></li>
-                  <li><a href="#">Deep Dropdown 3</a></li>
-                  <li><a href="#">Deep Dropdown 4</a></li>
-                  <li><a href="#">Deep Dropdown 5</a></li>
-                </ul>
-              </li>
-              <li><a href="#">Dropdown 2</a></li>
-              <li><a href="#">Dropdown 3</a></li>
-              <li><a href="#">Dropdown 4</a></li>
-            </ul>
-          </li>
-          <li><a href="contact.html">Contact</a></li>
+          <li><a href="{% url 'testimonial' %}">Testimonial</a></li>
+          <li><a href="{% url 'contact' %}">Contact us</a></li>
+          <li><a href="{% url 'videos' %}">Videos</a></li>
+          
+
+          {% if user.is_superuser and user.is_staff %}
+          <li class="badge bg-danger rounded-pill"><a href="{% url 'contact_list' %}">Messages ({{message_count}})</a></li>
+          {% endif %} 
+          
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
+      
+
+      
 
     </div>
   </header>
 
+  
+  
   {% block content %}
   {% endblock %}
-
+  {% include 'sajeksApp/base/testimonial_popup.html' %}
+  {% include 'sajeksApp/base/rate_us_button.html' %}
 
     <!-- Call To Action Section -->
     <section id="call-to-action" class="call-to-action section light-background">
@@ -94,20 +214,31 @@
               <div class="col-lg-6">
                 <h3>Subscribe To Our Newsletter</h3>
                 <p class="opacity-50">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Nesciunt, reprehenderit!
+                  Get the latest updates and exclusive content straight to your inbox.
                 </p>
               </div>
-              <div class="col-lg-6">
-                <form action="forms/newsletter.php" class="form-subscribe php-email-form">
+              <div class="col-lg-6" id="subscription-area">
+                <form action="{% url 'subscribe' %}" method="post" class="form-subscribe">
                   <div class="form-group d-flex align-items-stretch">
-                    <input type="email" name="email" class="form-control h-100" placeholder="Enter your e-mail">
+                    {% csrf_token %}
+                              
+                    <input type="hidden" name="next" value="{{ request.path }}#subscription-area">        
+                    {{ sub_form.email }} 
+                                        
                     <input type="submit" class="btn btn-secondary px-4" value="Subcribe">
                   </div>
-                  <div class="loading">Loading</div>
+                  <!-- <div class="loading">Loading</div> -->
                   <div class="error-message"></div>
                   <div class="sent-message">
-                    Your subscription request has been sent. Thank you!
+                    {% if messages %}
+                        <div class="messages-container" style="padding: 10px;">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }}" role="alert">
+                                    {{ message }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                   </div>
                 </form>
               </div>
@@ -118,99 +249,7 @@
   
     </main>
   
-    <footer id="footer" class="footer dark-background">
-  
-      <div class="footer-top">
-        <div class="container">
-          <div class="row gy-4">
-            <div class="col-lg-4 col-md-6 footer-about">
-              <a href="index.html" class="logo d-flex align-items-center">
-                <span class="sitename">AgriCulture</span>
-              </a>
-              <div class="footer-contact pt-3">
-                <p>A108 Adam Street</p>
-                <p>New York, NY 535022</p>
-                <p class="mt-3"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
-                <p><strong>Email:</strong> <span>info@example.com</span></p>
-              </div>
-            </div>
-  
-            <div class="col-lg-2 col-md-3 footer-links">
-              <h4>Useful Links</h4>
-              <ul>
-                <li><a href="#">Home</a></li>
-                <li><a href="#">About us</a></li>
-                <li><a href="#">Services</a></li>
-                <li><a href="#">Terms of service</a></li>
-                <li><a href="#">Privacy policy</a></li>
-              </ul>
-            </div>
-  
-            <div class="col-lg-2 col-md-3 footer-links">
-              <h4>Our Services</h4>
-              <ul>
-                <li><a href="#">Web Design</a></li>
-                <li><a href="#">Web Development</a></li>
-                <li><a href="#">Product Management</a></li>
-                <li><a href="#">Marketing</a></li>
-                <li><a href="#">Graphic Design</a></li>
-              </ul>
-            </div>
-  
-            <div class="col-lg-2 col-md-3 footer-links">
-              <h4>Hic solutasetp</h4>
-              <ul>
-                <li><a href="#">Molestiae accusamus iure</a></li>
-                <li><a href="#">Excepturi dignissimos</a></li>
-                <li><a href="#">Suscipit distinctio</a></li>
-                <li><a href="#">Dilecta</a></li>
-                <li><a href="#">Sit quas consectetur</a></li>
-              </ul>
-            </div>
-  
-            <div class="col-lg-2 col-md-3 footer-links">
-              <h4>Nobis illum</h4>
-              <ul>
-                <li><a href="#">Ipsam</a></li>
-                <li><a href="#">Laudantium dolorum</a></li>
-                <li><a href="#">Dinera</a></li>
-                <li><a href="#">Trodelas</a></li>
-                <li><a href="#">Flexo</a></li>
-              </ul>
-            </div>
-  
-          </div>
-        </div>
-      </div>
-  
-      <div class="copyright text-center">
-        <div class="container d-flex flex-column flex-lg-row justify-content-center justify-content-lg-between align-items-center">
-  
-          <div class="d-flex flex-column align-items-center align-items-lg-start">
-            <div>
-              © Copyright <strong><span>MyWebsite</span></strong>. All Rights Reserved
-            </div>
-            <div class="credits">
-              <!-- All the links in the footer should remain intact. -->
-              <!-- You can delete the links only if you purchased the pro version. -->
-              <!-- Licensing information: https://bootstrapmade.com/license/ -->
-              <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/herobiz-bootstrap-business-template/ -->
-              Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
-            </div>
-          </div>
-  
-          <div class="social-links order-first order-lg-last mb-3 mb-lg-0">
-            <a href=""><i class="bi bi-twitter-x"></i></a>
-            <a href=""><i class="bi bi-facebook"></i></a>
-            <a href=""><i class="bi bi-instagram"></i></a>
-            <a href=""><i class="bi bi-linkedin"></i></a>
-          </div>
-  
-        </div>
-      </div>
-  
-    </footer>
-  
+    {% include 'sajeksFooter/footer.html' %}
     <!-- Scroll Top -->
     <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
   

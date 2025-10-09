@@ -1,0 +1,40 @@
+
+    <section id="blog-posts-2" class="blog-posts-2 section">
+        <div class="container section-title" data-aos="fade-up">
+            <h3>WATCH OUR RECENT VIDEOS</h3>
+            {% comment %} <p>Sajeks Videos</p> {% endcomment %}
+        </div>
+        <div class="container">
+            <div class="row gy-4">
+            
+                {% for homevideo in homevideos %}
+                <div class="col-lg-4">
+                    <article class="position-relative h-100">
+                        
+                        <div class="post-img position-relative overflow-hidden">
+                            <img src="{{ homevideo.pic.url }}" class="img-fluid" alt="Video Thumbnail">
+                                
+                            <a href="{% url 'video_details' homevideo.id %}" class="pulsating-play-btn" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;">
+                                <span class="play"><i class="bi bi-play-fill"></i></span>
+                            </a>
+                        </div>
+                        
+                        <div class="meta d-flex align-items-end">
+                            <span class="post-date">VIDEO</span>
+                            </div>
+
+                        <div class="post-content d-flex flex-column">
+                            <h3 class="post-title">{{ homevideo.title }}</h3>
+                            <p>{{ homevideo.body|safe|truncatewords:20 }}</p>
+                            
+                            <a href="{% url 'video_details' homevideo.id %}" class="readmore stretched-link">
+                                <span>Watch Video</span><i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+                        
+                    </article>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>

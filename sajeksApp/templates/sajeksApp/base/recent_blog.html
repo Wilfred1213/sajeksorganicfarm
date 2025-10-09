@@ -1,0 +1,44 @@
+    <!-- Blog Posts 2 Section -->
+    <section id="blog-posts-2" class="blog-posts-2 section">
+
+      <div class="container">
+        <div class="row gy-4">
+          {% for blog in blogs %}
+          <div class="col-lg-4">
+            
+            <article class="position-relative h-100">
+
+              <div class="post-img position-relative overflow-hidden">
+                <img src="{{blog.img.url}}" class="img-fluid" alt="">
+              </div>
+
+              <div class="meta d-flex align-items-end">
+                <span class="post-date"><span>{{ blog.updated_on|date:"j" }}</span>{{ blog.updated_on|date:"F" }}</span>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-person"></i> <span class="ps-2">{{blog.author}}</span>
+                </div>
+                <span class="px-3 text-black-50">/</span>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-folder2"></i> <span class="ps-2">{{blog.categories}}</span>
+                </div>
+              </div>
+
+              <div class="post-content d-flex flex-column">
+
+                <h3 class="post-title">{{blog.content | safe | truncatewords:20}}</h3>
+                <a href="{% url 'blog_detail' blog.id %}" class="readmore stretched-link"><span>Read More</span><i class="bi bi-arrow-right"></i></a>
+
+              </div>
+
+            </article>
+            
+          </div><!-- End post list item -->
+          {% endfor %}
+          
+        </div>
+      </div>
+
+    </section><!-- /Blog Posts 2 Section -->
+
+    
+    

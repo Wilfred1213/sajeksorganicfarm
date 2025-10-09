@@ -1,0 +1,106 @@
+<!-- Blog Posts 2 Section -->
+    <section id="blog-posts-2" class="blog-posts-2 section">
+
+      <div class="container">
+        <div class="row gy-4">
+          {% for blog in search_blog %}
+          <div class="col-lg-4">
+            
+            <article class="position-relative h-100">
+
+              <div class="post-img position-relative overflow-hidden">
+                <img src="{{blog.img.url}}" class="img-fluid" alt="">
+              </div>
+
+              <div class="meta d-flex align-items-end">
+                <span class="post-date"><span>{{ blog.updated_on|date:"j" }}</span>{{ blog.updated_on|date:"F" }}</span>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-person"></i> <span class="ps-2">{{blog.author}}</span>
+                </div>
+                <span class="px-3 text-black-50">/</span>
+                <div class="d-flex align-items-center">
+                  <i class="bi bi-folder2"></i> <span class="ps-2">{{blog.categories}}</span>
+                </div>
+              </div>
+
+              <div class="post-content d-flex flex-column">
+
+                <h3 class="post-title">{{blog.content | safe | truncatewords:10}}</h3>
+                <a href="{% url 'blog_detail' blog.id %}" class="readmore stretched-link"><span>Read More</span><i class="bi bi-arrow-right"></i></a>
+
+              </div>
+
+            </article>
+            
+          </div><!-- End post list item -->
+          {% endfor %}
+          
+        </div>
+      </div>
+
+    </section><!-- /Blog Posts 2 Section -->
+
+
+
+{% comment %} <!-- Blog Details Section -->
+    <section id="blog-details" class="blog-details section">
+    <div class="container">
+
+        <article class="article">
+
+        <div class="post-img">
+            <img src="{{ blog.img.url}}" alt="" class="img-fluid" style="width: 100%;">
+        </div>
+
+        <h2 class="title">{{ blog.title|safe }}</h2>
+
+        <div class="meta-top">
+            <ul>
+            <li class="d-flex align-items-center"><i class="bi bi-person"></i> <a href="blog-details.html">{{ blog.author }}</a></li>
+            <li class="d-flex align-items-center"><i class="bi bi-clock"></i> <a href="blog-details.html"><time datetime="2020-01-01">{{ blog.updated_on|date }}</time></a></li>
+            <li class="d-flex align-items-center"><i class="bi bi-chat-dots"></i> <a href="blog-details.html">{{ comment_count }} Comments</a></li>
+            </ul>
+        </div><!-- End meta top -->
+
+        <div class="content">
+            <p>
+            {{blog.content|safe}}
+            </p>
+
+
+            <blockquote>
+            <p>
+                {{blog.blockquote}}
+            </p>
+            </blockquote>
+
+            <img src="{{blog.img.url}}" class="img-fluid" alt="" style="width: 100%;">
+
+            <p>
+            {{blog.content2|safe}}
+            </p>
+
+            
+
+            
+        </div><!-- End post content -->
+
+        <div class="meta-bottom">
+            <i class="bi bi-folder"></i>
+            
+            <ul class="cats">
+            <li><a href="#">{{blog.categories.name}}</a></li>
+            </ul>
+            
+            <i class="bi bi-tags"></i>
+            <ul class="tags">
+            <li><a href="#">Creative</a></li>
+            <li><a href="#">Tips</a></li>
+            <li><a href="#">Marketing</a></li>
+            </ul>
+        </div><!-- End meta bottom -->
+
+        </article>
+
+    </div>
+    </section><!-- /Blog Details Section --> {% endcomment %}

@@ -1,0 +1,329 @@
+{% load static %}
+{% load widget_tweaks %}
+
+{% load static %}
+{% load widget_tweaks %}
+
+{% include 'sajeksApp/base/popup_cookie_styling.html' %}
+
+<div id="testimonial-popup-modal" style="display: none; position: fixed; top: 10%; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 1050; justify-content: center; align-items: center;">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content border-0">
+            <div class="card p-4 p-md-5 shadow-lg border-0 testimonial-form-card w-100">
+                <div class="modal-header border-0 pb-2">
+                    <h2 class="card-title text-center text-success w-100 mb-0">Leave a Review</h2>
+                    <button type="button" class="btn-close" aria-label="Close" onclick="closeTestimonialPopup()"></button>
+                </div>
+                
+                <p class="text-center text-muted mb-4 mt-2">Your feedback helps us grow the community.</p>
+
+                <form id="testimonial-form" action="{% url 'submit_testimonial_view' %}" method="post" enctype="multipart/form-data" class="modern-form">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ testimonial_form.full_name.id_for_label }}" class="form-label fw-bold">Your Full Name:</label>
+                        {{ testimonial_form.full_name|add_class:"form-control form-control-lg"|attr:"placeholder:Enter your full name" }}
+                    </div>
+
+                    <div class="mb-4 text-center">
+                        <label class="form-label fw-bold d-block">Rate Your Experience (1 to 5 Stars):</label>
+                        <div class="rating-input-group d-flex justify-content-center align-items-center"> 
+                            {{ testimonial_form.rating }}
+                        </div>
+                        <small class="text-muted">Click the stars to rate.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ testimonial_form.message.id_for_label }}" class="form-label fw-bold">Your Message:</label>
+                        {{ testimonial_form.message|add_class:"form-control"|attr:"rows:4"|attr:"placeholder:Share your detailed experience here..." }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ testimonial_form.image.id_for_label }}" class="form-label fw-bold">Upload Your Photo (Optional):</label>
+                        {{ testimonial_form.image|add_class:"form-control" }}
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-success btn-lg px-5 shadow-lg-sm submit-btn">
+                            Submit Testimonial
+                        </button>
+                    </div>
+                </form>
+            </div> 
+        </div>
+    </div>
+</div>
+
+<div id="cookie-consent-banner" class="cookie-banner" style="display: none;">
+    <div class="container d-flex justify-content-between align-items-center">
+        <p class="mb-0">
+            🍪 This site uses cookies to enhance user experience. By clicking "Accept," you consent to our use of cookies.
+        </p>
+        <button id="accept-cookies-btn" class="btn btn-sm btn-success flex-shrink-0 ms-3">
+            Accept
+        </button>
+    </div>
+</div>
+
+<script>
+    // --- Global Helper Functions ---
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
+    function setCookie(name, value, days) {
+        const d = new Date();
+        d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = "expires=" + d.toUTCString();
+        document.cookie = `${name}=${value}; ${expires}; path=/; SameSite=Lax`;
+    }
+    
+    // --- Testimonial Functions ---
+    const RATED_COOKIE_NAME = 'user_has_rated';
+    const CONSENT_COOKIE_NAME = 'cookie_consent_given';
+
+    function closeTestimonialPopup() {
+        document.getElementById('testimonial-popup-modal').style.display = 'none';
+    }
+
+    function handleTestimonialSubmission(event) {
+        event.preventDefault(); 
+        const form = event.target;
+        const formData = new FormData(form);
+        const submitBtn = form.querySelector('button[type="submit"]');
+        
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(response => {
+            if (!response.ok) { return response.json().then(data => { throw data; }); }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert('Thank you for your review!');
+                closeTestimonialPopup(); 
+                form.reset(); 
+                
+                // CRITICAL: Set the 'has rated' cookie for 1 year
+                setCookie(RATED_COOKIE_NAME, 'true', 365); 
+                
+                console.log("Review submitted and RATED_COOKIE set. Popup will not show again.");
+            }
+        })
+        .catch(errorData => {
+            alert('Please correct the form errors.');
+        })
+        .finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Testimonial';
+        });
+    }
+
+    // --- Core Logic: Starts the Popup Timer ONLY if not rated ---
+    function startTestimonialLogic() {
+        const modal = document.getElementById('testimonial-popup-modal');
+        const hasRated = getCookie(RATED_COOKIE_NAME); 
+        
+        if (modal && !hasRated) {
+            const intervalTime = 120000; // 2 minutes (2000ms for testing, use 120000 for production)
+            
+            console.log("User has NOT rated. Starting testimonial timer (2 min delay)...");
+            let timer = setInterval(function() {
+                clearInterval(timer); 
+                modal.style.display = 'flex'; 
+            }, intervalTime);
+        } else if (hasRated) {
+            console.log("Testimonial popup suppressed: User has already rated.");
+        }
+    }
+
+
+    // --- Initialization: DOMContentLoaded ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const banner = document.getElementById('cookie-consent-banner');
+        const acceptBtn = document.getElementById('accept-cookies-btn');
+        const form = document.getElementById('testimonial-form');
+
+        // Attach form submission handler
+        if (form) {
+            form.addEventListener('submit', handleTestimonialSubmission);
+        }
+        
+        const consentGiven = getCookie(CONSENT_COOKIE_NAME);
+
+        // Logic 1: Consent is already given OR we need to ask for it
+        if (consentGiven) {
+            // Consent OK: Proceed directly to check if the user has rated us.
+            console.log("Consent given. Checking testimonial status.");
+            startTestimonialLogic();
+        } else if (banner) {
+            // Consent NOT given: Show the banner
+            console.log("No consent. Displaying cookie consent banner.");
+            banner.style.display = 'block'; 
+
+            if (acceptBtn) {
+                acceptBtn.addEventListener('click', function() {
+                    console.log("Accept clicked. Setting consent cookie and starting testimonial logic.");
+                    
+                    // 1. Set the consent cookie (for 90 days)
+                    setCookie(CONSENT_COOKIE_NAME, 'true', 90);
+                    
+                    // 2. Hide the banner
+                    banner.style.display = 'none';
+                    
+                    // 3. Start the testimonial timer logic
+                    startTestimonialLogic();
+                });
+            }
+        }
+    });
+</script>
+
+
+
+
+
+
+{% comment %} 
+
+{% load static %}
+{% load widget_tweaks %}
+
+<head>
+    <link href="{% static 'sajeksApp/testimonial/style.css' %}" rel="stylesheet">
+</head>
+
+<div id="testimonial-popup-modal" style="display: none; position: fixed; top: 10%; left: 0; width: 100%; height: 90%; background: rgba(0, 0, 0, 0.7); z-index: 1050; justify-content: center; align-items: center;">
+    
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content border-0">
+            
+            <div class="card p-4 p-md-5 shadow-lg border-0 testimonial-form-card w-100">
+                
+                <div class="modal-header border-0 pb-2">
+                    <h2 class="card-title text-center text-success w-100 mb-0">Leave a Review</h2>
+                    <button type="button" class="btn-close" aria-label="Close" onclick="closeTestimonialPopup()"></button>
+                </div>
+                
+                <p class="text-center text-muted mb-4 mt-2">Your feedback helps us grow the community.</p>
+
+                <form action="{% url 'submit_testimonial_view' %}" method="post" enctype="multipart/form-data" class="modern-form">
+                    {% csrf_token %}
+                    
+                    {% if testimonial_form.errors and request.method == 'POST' %}
+                        <div class="alert alert-danger">
+                            Please correct the errors below.
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label for="{{ testimonial_form.full_name.id_for_label }}" class="form-label fw-bold">Your Full Name:</label>
+                        {{ testimonial_form.full_name|add_class:"form-control form-control-lg"|attr:"placeholder:Enter your full name" }}
+                    </div>
+
+                    <div class="mb-4 text-center">
+                        <label class="form-label fw-bold d-block">Rate Your Experience (1 to 5 Stars):</label>
+                        <div class="rating-input-group d-flex justify-content-center align-items-center"> 
+                            {{ testimonial_form.rating }}
+                        </div>
+                        <small class="text-muted">Click the stars to rate.</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ testimonial_form.message.id_for_label }}" class="form-label fw-bold">Your Message:</label>
+                        {{ testimonial_form.message|add_class:"form-control"|attr:"rows:4"|attr:"placeholder:Share your detailed experience here..." }}
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="{{ testimonial_form.image.id_for_label }}" class="form-label fw-bold">Upload Your Photo (Optional):</label>
+                        {{ testimonial_form.image|add_class:"form-control" }}
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-success btn-lg px-5 shadow-lg-sm submit-btn">
+                            Submit Testimonial
+                        </button>
+                    </div>
+                </form>
+
+            </div> </div>
+    </div>
+</div> 
+
+
+
+<div id="cookie-consent-banner" class="cookie-banner" style="display: none;">
+    <div class="container d-flex justify-content-between align-items-center">
+        <p class="mb-0">
+            🍪 This site uses cookies to enhance user experience and analyze traffic. By clicking "Accept," you consent to our use of cookies.
+        </p>
+        <button id="accept-cookies-btn" class="btn btn-sm btn-success flex-shrink-0 ms-3">
+            Accept
+        </button>
+    </div>
+</div>
+
+<script>
+    // --- Helper Functions (Contained within this script) ---
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(';').shift();
+        return null;
+    }
+
+    function setCookie(name, value, days) {
+        const d = new Date();
+        d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+        const expires = "expires=" + d.toUTCString();
+        // IMPORTANT: Set SameSite=Lax for modern browsers
+        document.cookie = `${name}=${value}; ${expires}; path=/; SameSite=Lax`;
+    }
+
+    // --- Main Consent Initialization Logic ---
+    document.addEventListener('DOMContentLoaded', function() {
+        const banner = document.getElementById('cookie-consent-banner');
+        const acceptBtn = document.getElementById('accept-cookies-btn');
+        const consentCookieName = 'cookie_consent_given'; // Use a new, unique name
+
+        // Check if the consent cookie exists
+        const consentGiven = getCookie(consentCookieName);
+
+        // Debugging logs - Check your console!
+        console.log("Cookie Consent Script (Inline) Initialized.");
+        console.log("Consent Status:", consentGiven ? 'Given' : 'Not Given');
+
+        if (!consentGiven && banner) {
+            // Show the banner if consent is NOT given and the element exists
+            console.log("Displaying cookie consent banner.");
+            banner.style.display = 'block'; // Make it visible
+
+            if (acceptBtn) {
+                acceptBtn.addEventListener('click', function() {
+                    console.log("Accept button clicked. Setting consent cookie.");
+
+                    // 1. Set the consent cookie for 90 days
+                    setCookie(consentCookieName, 'true', 90);
+
+                    // 2. Hide the banner
+                    banner.style.display = 'none';
+                    
+                    // 3. OPTIONAL: If testimonial logic needs to start now, 
+                    //    you would call the startTestimonialLogic() function here.
+                    //    Since we're separating the two, we'll keep this clean.
+                });
+            }
+        }
+        // If consent is given, the banner remains hidden due to the inline style="display: none;"
+    });
+</script>
+<script src="{% static 'sajeksApp/testimonial/testimonial_popup.js' %}"></script> {% endcomment %}
