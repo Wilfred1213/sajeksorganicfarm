@@ -1,0 +1,8 @@
+# Django specific files
+*.log
+*.pot
+__pycache__
+*.sqlite3
+
+# Credentials and sensitive data
+.env

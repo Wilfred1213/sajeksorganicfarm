@@ -5,6 +5,7 @@ import re
 from django_ckeditor_5.fields import CKEditor5Field
 from django.utils.text import slugify
 from django.core.validators import MinValueValidator, MaxValueValidator
+import uuid 
 
 class Carousel(models.Model):
     title= models.CharField(max_length=100, null= True, help_text="Heading of the carousel.")
@@ -191,7 +192,15 @@ class HomePage(models.Model):
     
 # models.py for a 'farm' app
 class Subscribtion(models.Model):
+    is_active = models.BooleanField(default=True)
     email = models.EmailField(max_length=100)
+
+    posted_on = models.DateTimeField(auto_now_add=True, null=True)
+    
+    # 🔑 NEW FIELD: Unique token for secure unsubscribing
+    # default=uuid.uuid4 ensures a unique token is generated on creation
+    token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=True) 
+
 
     def __str__(self):
         return self.email
@@ -280,7 +289,7 @@ class ProduceItem(models.Model):
     description = models.TextField(verbose_name="Full Description",help_text="Detailed information about the produce, growing method, and benefits.")
     
     # E-commerce Fields
-    price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Price (Dollar)",help_text="The price per unit (e.g., per Kg or per bunch).")
+    price = models.DecimalField(max_digits=8, decimal_places=2, verbose_name="Price (Kenya Shilling)",help_text="The price per unit (e.g., per Kg or per bunch).")
     unit_of_sale = models.CharField(max_length=50, default='per Kg',help_text="e.g., 'per Kg', 'per Bunch', 'per Box'")
     
     # Stock Management Field (Essential for the template logic)
@@ -363,3 +372,24 @@ class Team(models.Model):
     role =models.CharField(max_length=50)
     image = models.ImageField(upload_to='testimonial_images/', null=True, blank=True,verbose_name="Product Image")
 
+
+    def __str__(self):
+        return self.full_name
+    
+class Team_url(models.Model):
+    url = models.CharField(max_length=100, null=True, blank=True)
+    team = models.ForeignKey(Team, verbose_name=("Social Handles for team members"), on_delete=models.CASCADE)
+    
+
+class Gallary(models.Model):
+    title =models.CharField(max_length=50, null=True, blank=True)
+    image = models.ImageField(upload_to='gallary_images/', null=True, blank=True,verbose_name="Product Image")
+
+class QuoteByCEO(models.Model):
+    full_name = models.CharField(max_length=50)
+    image = models.ImageField(upload_to='CEO_images/')
+    body =models.TextField(max_length=250)
+    
+    def __str__(self):
+        return self.full_name
+    

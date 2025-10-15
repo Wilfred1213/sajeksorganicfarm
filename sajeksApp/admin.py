@@ -11,6 +11,7 @@ admin.site.register(Whychooseuspix)
 admin.site.register(Tags)
 admin.site.register(Subscribtion)
 admin.site.register(Team)
+admin.site.register(Gallary)
 
 @admin.register(Homevideo)
 class HomeVideosAdmin(admin.ModelAdmin):
@@ -46,5 +47,9 @@ class adminContact(admin.ModelAdmin):
     list_display = ('location', 'email', 'call')
 
 @admin.register(Testimonial)
-class adminContact(admin.ModelAdmin):
+class TestimonialContact(admin.ModelAdmin):
     list_display = ('full_name', 'message', 'image')
+
+@admin.register(Team_url)
+class TeamUrlAdmin(admin.ModelAdmin):
+    list_display = ('url', 'team')

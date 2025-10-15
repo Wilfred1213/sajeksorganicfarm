@@ -20,15 +20,14 @@
     </div>
   </div><!-- End Page Title -->
 
+  {% if search_blog %}
+        {% include 'sajeksApp/search_refactor.html' %}
+        
+  {% else %}
   <div class="container">
     <div class="row">
 
       <div class="col-lg-8">
-
-        {% if search_blog %}
-        {% include 'sajeksApp/search_refactor.html' %}
-        
-        {% else %}
 
         <!-- Blog Details Section -->
         <section id="blog-details" class="blog-details section">
@@ -77,14 +76,16 @@
                 <i class="bi bi-folder"></i>
                 
                 <ul class="cats">
-                  <li><a href="#">{{blog.categories.name}}</a></li>
+                  {% for cat in blog.categories.all %}
+                  <li><a href="{% url 'blog' %}">{{cat}}</a></li>
+                  {% endfor %}
                 </ul>
                 
                 <i class="bi bi-tags"></i>
                 <ul class="tags">
-                  <li><a href="#">Creative</a></li>
-                  <li><a href="#">Tips</a></li>
-                  <li><a href="#">Marketing</a></li>
+                  <li><a href="{% url 'service' %}">Service</a></li>
+                  <li><a href="{% url 'videos' %}">videos</a></li>
+                  <li><a href="{% url 'produce_list_view' %}">Market</a></li>
                 </ul>
               </div><!-- End meta bottom -->
 
@@ -93,10 +94,10 @@
           </div>
         </section><!-- /Blog Details Section -->
 
-        {% endif %}
+        
 
         <!-- Blog Comments Section -->
-        <section id="blog-comments" class="blog-comments section">
+        {% comment %} <section id="blog-comments" class="blog-comments section">
           <div class="container">
               <h4 class="comments-count">{{ comment_count }} Comments</h4>
       
@@ -142,6 +143,71 @@
                           </div>{% endfor %}
                   </div>{% endfor %}
           </div>
+        </section> {% endcomment %}
+        <style>
+            .comment.hidden-comment {
+            display: none !important;
+            }
+        </style>
+        <section id="blog-comments" class="blog-comments section">
+            <div class="container">
+                <h4 class="comments-count">{{ comment_count }} Comments</h4>
+                
+                {% for comment in comments %}
+                    
+                    {% if forloop.counter > 5 %}
+                        <div id="comment-{{ comment.id }}" class="comment hidden-comment">
+                    {% else %}
+                        <div id="comment-{{ comment.id }}" class="comment">
+                    {% endif %}
+
+                        <div class="d-flex">
+                            <div class="comment-img">
+                                </div>
+                            <div>
+                                <h5>
+                                    <a href="">{{ comment.full_name }}</a> 
+                                    <a href="#comment-form-{{ comment.id }}" class="reply-btn" data-parent-id="{{ comment.id }}"><i class="bi bi-reply-fill"></i> Reply</a>
+                                </h5>
+                                <time datetime="{{ comment.created_on|date:'c' }}">{{ comment.created_on|date:'M d, Y' }}</time>
+                                <p>{{ comment.content|safe }}</p>
+                            </div>
+                        </div>
+
+                        {% for reply in comment.replies.all %}
+                            <div id="comment-reply-{{ reply.id }}" class="comment comment-reply">
+                                <div class="d-flex">
+                                    <div class="comment-img">
+                                        {% if reply.img %}
+                                            <img src="{{ reply.img.url }}" alt="Reply Image">
+                                        {% else %}
+                                            <img src="{% static 'sajeksApp/assets/img/mulching_1.webp' %}" alt="Default Avatar">
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <h5>
+                                            <a href="">{{ reply.full_name }}</a> 
+                                            <a href="#comment-form-{{ reply.id }}" class="reply-btn" data-parent-id="{{ reply.id }}"><i class="bi bi-reply-fill"></i> Reply</a>
+                                        </h5>
+                                        <time datetime="{{ reply.created_on|date:'c' }}">{{ reply.created_on|date:'M d, Y' }}</time>
+                                        <p>{{ reply.content|safe }}</p>
+                                    </div>
+                                </div>
+                                </div>
+                        {% endfor %}
+
+                    </div>
+                {% endfor %}
+                
+                {% if comments|length > 5 %}
+                    <div class="text-center mt-3" id="show-more-comments-wrapper">
+                        <button class="btn btn-outline-primary btn-sm" id="show-more-comments-btn">
+                            Show All {{ comments|length }} Comments <i class="bi bi-arrow-down-circle"></i>
+                        </button>
+                    </div>
+                {% endif %}
+
+            </div>
         </section>
       
         <!-- form section -->
@@ -190,97 +256,15 @@
 
       </div>
 
-      <div class="col-lg-4 sidebar">
-
-        <div class="widgets-container">
-
-          <!-- Blog Author Widget -->
-          <div class="blog-author-widget widget-item">
-
-            <div class="d-flex flex-column align-items-center">
-              <div class="d-flex align-items-center w-100">
-                <img src="{% static 'sajeksApp/assets/img/blog/blog-author.jpg' %}" class="rounded-circle flex-shrink-0" alt="">
-                <div>
-                  <h4>Jane Smith</h4>
-                  <div class="social-links">
-                    <a href="https://x.com/#"><i class="bi bi-twitter-x"></i></a>
-                    <a href="https://facebook.com/#"><i class="bi bi-facebook"></i></a>
-                    <a href="https://instagram.com/#"><i class="biu bi-instagram"></i></a>
-                    <a href="https://instagram.com/#"><i class="biu bi-linkedin"></i></a>
-                  </div>
-                </div>
-              </div>
-
-              <p>
-                Itaque quidem optio quia voluptatibus dolorem dolor. Modi eum sed possimus accusantium. Quas repellat voluptatem officia numquam sint aspernatur voluptas. Esse et accusantium ut unde voluptas.
-              </p>
-
-            </div>
-
-          </div><!--/Blog Author Widget -->
-
-          <!-- Search Widget -->
-          <div class="search-widget widget-item">
-
-            <h3 class="widget-title">Search</h3>
-            <form action="">
-              {% csrf_token %}
-              {{ search_form.query }} 
-              <button type="submit" title="Search"><i class="bi bi-search"></i></button>
-            </form>
-
-          </div><!--/Search Widget -->
-
-          <!-- Categories Widget -->
-          <div class="categories-widget widget-item">
-
-            <h3 class="widget-title">Categories</h3>
-            <ul class="mt-3">
-              {% for count in categories_count %}
-              <li><a href="{% url 'categories' count.name %}">{{ count.name }} <span>({{count.post_count}})</span></a></li>
-              {% endfor %}
-            </ul>
-
-          </div><!--/Categories Widget -->
-
-          <!-- Recent Posts Widget 2 -->
-          <div class="recent-posts-widget-2 widget-item" >
-
-            <h3 class="widget-title">Recent Posts</h3>
-
-            <div class="post-item">
-              {% for recent in recent_posts %}
-              <h4><a href="{% url 'blog_detail' recent.id %}">{{recent.title | safe|truncatewords:7}}...</a></h4>
-              <time datetime="2020-01-01">{{recent.updated_on | date}}</time>
-              {% endfor %}
-            </div><!-- End recent post item-->
-            
-          </div><!--/Recent Posts Widget 2 -->
-
-          <!-- Tags Widget -->
-          <div class="tags-widget widget-item">
-
-            <h3 class="widget-title">Tags</h3>
-            <ul>
-              {% for tag in tags %}
-              <li><a href="{% url 'tag' tag.name %}">{{ tag.name }}</a></li>
-              {% endfor %}
-              
-            </ul>
-
-          </div><!--/Tags Widget -->
-
-        </div>
-
-      </div>
+      {% include 'sajeksApp/blog_sidebar.html' %}
 
     </div>
   </div>
 
-  
+  {% endif %}
 
   {% comment %} javascript for comment section {% endcomment %} 
-  <script>
+  {% comment %} <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Find the hidden parent input field once to make it more efficient
         const parentInput = document.getElementById('id_parent');
@@ -315,6 +299,70 @@
             });
         });
     });
+
+
+    
+</script>  {% endcomment %}
+{% comment %} Javascript for comment section (Combined Logic) {% endcomment %} 
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- 1. Comment Reply Logic (for all reply buttons) ---
+        const parentInput = document.getElementById('id_parent');
+        const replyButtons = document.querySelectorAll('.reply-btn');
+
+        replyButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                const parentId = btn.getAttribute('data-parent-id');
+                
+                if (parentInput) {
+                    parentInput.value = parentId;
+                }
+                
+                // Scroll to the comment form (ID must be 'post_target' as per your HTML)
+                const formSection = document.getElementById('post_target'); 
+                if (formSection) {
+                    formSection.scrollIntoView({ behavior: 'smooth' });
+                }
+
+                // Optional: Update the form title (if element exists)
+                const formTitle = document.querySelector('.comment-form-title');
+                const commentAuthor = btn.closest('.d-flex').querySelector('h5 a').innerText;
+                if (formTitle && commentAuthor) {
+                    formTitle.innerText = `Replying to Comment by ${commentAuthor}`;
+                }
+            });
+        });
+        
+        // -----------------------------------------------------------------
+        
+        // --- 2. Show More Comments Logic ---
+        const showMoreBtn = document.getElementById('show-more-comments-btn');
+        const hiddenComments = document.querySelectorAll('.comment.hidden-comment');
+        
+        if (showMoreBtn && hiddenComments.length > 0) {
+            
+            showMoreBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Show all hidden comments
+                hiddenComments.forEach(comment => {
+                    comment.style.display = 'flex'; 
+                    comment.classList.remove('hidden-comment'); 
+                });
+                
+                // Hide the 'Show More' button wrapper
+                const wrapper = document.getElementById('show-more-comments-wrapper');
+                if (wrapper) {
+                     wrapper.style.display = 'none';
+                }
+            });
+        }
+    });
 </script>
 
-  {% endblock %}
+
+{% endblock %}
+
+ 

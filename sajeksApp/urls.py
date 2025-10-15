@@ -21,4 +21,7 @@ urlpatterns = [
     path('contact_detail/<int:contact_id>/', views.contact_detail, name ='contact_detail'),
     path('mark_as_read/<int:contact_id>/', views.mark_as_read, name ='mark_as_read'),
     path('delete_contact/<int:contact_id>/', views.delete_contact, name ='delete_contact'),
+    path('gallery/', views.gallery, name ='gallery'),
+    path('send_newsletter_view/', views.send_newsletter_view, name ='send_newsletter_view'),
+    path('unsubscribe_view/<uuid:token>/', views.unsubscribe_view, name='unsubscribe_view'),
 ]

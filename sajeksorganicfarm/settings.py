@@ -12,16 +12,27 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
+
+# Load environment variables from .env file (for local development only)
+load_dotenv() 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# Fetch sensitive settings from the environment
+
+DB_NAME = os.environ.get('DATABASE_NAME')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+%fhds2fqp2$dd4t*9yh8t0g$&rum$-umyj@cq8b!2sa$(2yry'
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    raise ImproperlyConfigured("DJANGO_SECRET_KEY is missing from environment or .env file.")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -49,6 +60,8 @@ INSTALLED_APPS = [
 # settings.py
 
 # ... other settings ...
+
+SITE_ID = 1
 
 CKEDITOR_5_CONFIGS = {
     'default': {
@@ -132,6 +145,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+        
+        'USER': os.environ.get('DATABASE_USER'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOST'),
+        'PORT': os.environ.get('DATABASE_PORT', '5432'), # Use default if not set
     }
 }
 
@@ -179,15 +197,25 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/')
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+# settings.py
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' 
+
+# 2. YOUR SMTP DETAILS (Example using a common provider)
+EMAIL_HOST = 'smtp.gmail.com'  # <-- CHECK THIS CAREFULLY
+# 3. SECURITY SETTINGS
+EMAIL_USE_TLS = True             # <-- Must be True for port 587
+EMAIL_USE_SSL = False          # <-- Must be False if using EMAIL_USE_TLS=True
+# 4. SENDER ADDRESS
+DEFAULT_FROM_EMAIL = 'no-reply@ySajecks.com'
+ADMIN_EMAIL = 'mathias.wilfred@yahoo.com' # Your destination email
+SITE_NAME = 'Sajeks App'
 EMAIL_PORT =465
 EMAIL_USE_SSL=True
 EMAIL_USE_TLS = False
 EMAIL_HOST_USER = 'mathiaswilfred7@gmail.com'
-EMAIL_HOST_PASSWORD= '****'
 
-# this one for development
-#EMAIL_BACKEND = "EMAIL_BACKEND ="django.core.mail.backends.console.EmailBackend"
+
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

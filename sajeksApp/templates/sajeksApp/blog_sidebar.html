@@ -1,0 +1,84 @@
+{% load static %}
+<div class="col-lg-4 sidebar">
+
+        <div class="widgets-container">
+
+          <!-- Blog Author Widget -->
+          <div class="blog-author-widget widget-item">
+
+            <div class="d-flex flex-column align-items-center">
+              <div class="d-flex align-items-center w-100">
+                <img src="{% static 'sajeksApp/assets/img/blog/blog-author.jpg' %}" class="rounded-circle flex-shrink-0" alt="">
+                <div>
+                  <h4>Jane Smith</h4>
+                  <div class="social-links">
+                    <a href="https://x.com/#"><i class="bi bi-twitter-x"></i></a>
+                    <a href="https://facebook.com/#"><i class="bi bi-facebook"></i></a>
+                    <a href="https://instagram.com/#"><i class="biu bi-instagram"></i></a>
+                    <a href="https://instagram.com/#"><i class="biu bi-linkedin"></i></a>
+                  </div>
+                </div>
+              </div>
+
+              <p>
+                Itaque quidem optio quia voluptatibus dolorem dolor. Modi eum sed possimus accusantium. Quas repellat voluptatem officia numquam sint aspernatur voluptas. Esse et accusantium ut unde voluptas.
+              </p>
+
+            </div>
+
+          </div><!--/Blog Author Widget -->
+
+          <!-- Search Widget -->
+          <div class="search-widget widget-item">
+
+            <h3 class="widget-title">Search</h3>
+            <form action="">
+              {% csrf_token %}
+              {{ search_form.query }} 
+              <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+            </form>
+
+          </div><!--/Search Widget -->
+
+          <!-- Categories Widget -->
+          <div class="categories-widget widget-item">
+
+            <h3 class="widget-title">Categories</h3>
+            <ul class="mt-3">
+              {% for count in categories_count %}
+              <li><a href="{% url 'categories' count.name %}">{{ count.name }} <span>({{count.post_count}})</span></a></li>
+              {% endfor %}
+            </ul>
+
+          </div><!--/Categories Widget -->
+
+          <!-- Recent Posts Widget 2 -->
+          <div class="recent-posts-widget-2 widget-item" >
+
+            <h3 class="widget-title">Recent Posts</h3>
+
+            <div class="post-item">
+              {% for recent in recent_posts %}
+              <h4><a href="{% url 'blog_detail' recent.id %}">{{recent.title | safe|truncatewords:7}}...</a></h4>
+              <time datetime="2020-01-01">{{recent.updated_on | date}}</time>
+              {% endfor %}
+            </div><!-- End recent post item-->
+            
+          </div><!--/Recent Posts Widget 2 -->
+
+          <!-- Tags Widget -->
+          <div class="tags-widget widget-item">
+
+            <h3 class="widget-title">Tags</h3>
+            <ul>
+              {% for tag in tags %}
+              <li><a href="{% url 'tag' tag.name %}">{{ tag.name }}</a></li>
+              {% endfor %}
+              
+            </ul>
+
+          </div><!--/Tags Widget -->
+
+        </div>
+
+      </div>

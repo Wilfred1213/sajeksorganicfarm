@@ -63,6 +63,9 @@
                         <li style="padding: 8px 0;"><a href="{% url 'contact' %}" style="color: #f8f8f8; text-decoration: none; display: flex; align-items: center;">
                             <span style="margin-right: 8px; color: #b3e59b;">&bull;</span> Contact
                         </a></li>
+                        <li style="padding: 8px 0;"><a href="{% url 'gallery' %}" style="color: #f8f8f8; text-decoration: none; display: flex; align-items: center;">
+                            <span style="margin-right: 8px; color: #b3e59b;">&bull;</span> Gallery
+                        </a></li>
                     </ul>
                 </div>
 
@@ -88,6 +91,14 @@
                         <li style="padding: 8px 0;"><a href="{% url 'testimonial' %}" style="color: #f8f8f8; text-decoration: none; display: flex; align-items: center;">
                             <span style="margin-right: 8px; color: #b3e59b;">&bull;</span> Testimonial
                         </a></li>
+                        <li style="padding: 8px 0;"><a href="{% url 'videos' %}" style="color: #f8f8f8; text-decoration: none; display: flex; align-items: center;">
+                            <span style="margin-right: 8px; color: #b3e59b;">&bull;</span>Videos
+                        </a></li>
+                        {% if user.is_superuser %}
+                        <li style="padding: 8px 0;"><a href="{% url 'send_newsletter_view' %}" style="color: #f8f8f8; text-decoration: none; display: flex; align-items: center;">
+                            <span style="margin-right: 8px; color: #b3e59b;">&bull;</span> Send news Letter
+                        </a></li>
+                        {% endif %}
                     </ul>
                 </div>
                 

@@ -1,0 +1,55 @@
+{% extends 'sajeksApp/base/base.html' %}
+
+{% block title %}Our Gallery | Sajeks App{% endblock %}
+
+{% block content %}
+<section id="gallery" class="gallery-section py-5" style="background-color: #f7fcf7;">
+    <div class="container my-5">
+
+        {# Gallery Header #}
+        <div class="row text-center mb-5" data-aos="fade-up">
+            <div class="col-lg-8 mx-auto">
+                <span class="text-success fw-bold text-uppercase" style="letter-spacing: 2px;">Visual Journey</span>
+                <h1 class="display-4 fw-bolder mb-3" style="color: #1e3c1e;">Farm Photo Gallery 📸</h1>
+                <p class="lead text-muted">Explore the beauty of our organic farm, from the fresh harvests to the vibrant fields. Click any image to see it in full detail.</p>
+            </div>
+        </div>
+
+        {# Gallery Grid #}
+        <div class="row" data-aos="fade-up" data-aos-delay="100">
+            {% for photo in gallery %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="shadow-sm rounded-3 overflow-hidden" 
+                     style="position: relative; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease;">
+                    
+                    {# GLightbox/Lightbox Trigger #}
+                    <a href="{{ photo.image.url }}" class="glightbox" data-gallery="sajeksGallery" data-caption="{{ photo.title|default:photo.title }}">
+                        
+                        {# Image Container with INLINE CSS for Aspect Ratio FIX (e.g., Square 1:1) #}
+                        <div style="width: 100%; padding-top: 100%; position: relative; overflow: hidden;">
+                            
+                            <img src="{{ photo.image.url }}" alt="{{ photo.title|default:photo.title }}" class="img-fluid" 
+                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+                                        object-fit: cover; object-position: center; transition: transform 0.5s ease;">
+                            
+                            {# Overlay for Aesthetic Hover (Note: Hover effects require external CSS) #}
+                            <div class="d-flex flex-column justify-content-end p-3" 
+                                 style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+                                        background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+                                        opacity: 0; transition: opacity 0.3s ease;">
+                                <h5 class="text-white mb-1 fw-bold">{{ photo.image.url|default:photo.title }}</h5>
+                                <p class="text-white-50 small mb-0"><i class="fas fa-search me-1"></i> View Full Image</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12 text-center p-5">
+                <p class="lead text-muted">No photos available yet. Check back soon!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

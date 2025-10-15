@@ -3,14 +3,18 @@ from typing import Counter
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
-from sajeksApp.models import Carousel, Services,ProduceItem, Whychooseuspix, Team, Testimonial, Whychooseus,adminContact, About_us, Homevideo, Blog, Comment, Category, Tags
-from sajeksApp.forms import CommentForm, SearchForm, Contact, SubscribtionForm, ContactForm, TestimonialForm
+from sajeksApp.models import Carousel, Services,ProduceItem, Whychooseuspix, Team, Testimonial, Whychooseus,adminContact, Gallary, About_us, Homevideo, Blog, Comment, Category, Tags, Subscribtion
+from sajeksApp.forms import CommentForm, SearchForm, NewsletterForm, Contact, SubscribtionForm, ContactForm, TestimonialForm
 from sajeksApp.subscription import subscribe_handler
 from sajeksApp.paginator import paginate_queryset
 from django.db.models import aggregates, F, Count, Q
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import JsonResponse
 from django.contrib.auth.models import User
+from django.contrib.admin.views.decorators import staff_member_required # Important for security
+from django.core.mail import EmailMessage
+from django.conf import settings
+from sajeksApp.context_processors import build_unsubscribe_link
 
 
 # Create your views here.
@@ -64,18 +68,26 @@ def blog(request):
     
     msg_countig = Contact.objects.filter(status =True)
     message_count = msg_countig.count()
+
+    produce_items = ProduceItem.objects.all()
+    products = paginate_queryset(request, produce_items, items_per_page=8)
     context ={
         'admincontact':contact,
         'blogs':blogs,
         'sub_form':subscribtion_form,
-        'message_count':message_count
+        'message_count':message_count,
+
+        'produce_items':products
     }
     return render(request, 'sajeksApp/blog.html', context)
 
 
 
 def blog_detail(request, blog_id):
-    blog = get_object_or_404(Blog, id=blog_id)
+    try:
+        blog = get_object_or_404(Blog, id=blog_id)
+    except Blog.DoesNotExist:
+        messages.info(request, 'This blog does not exist')
     recent_post = Blog.objects.all()
     tags = Tags.objects.all()
 
@@ -137,7 +149,10 @@ def blog_detail(request, blog_id):
     return render(request, 'sajeksApp/blog-details.html', context)
 
 def categories(request, category_id):
-    category = Category.objects.get(name = category_id)
+    try:
+        category = Category.objects.get(name = category_id)
+    except Category.DoesNotExist:
+        messages.info(request, 'This Category does not exist')
     get_blog = Blog.objects.filter(categories = category)
 
     blogs = paginate_queryset(request, get_blog, items_per_page=9)
@@ -147,12 +162,16 @@ def categories(request, category_id):
     
     msg_countig = Contact.objects.filter(status =True)
     message_count = msg_countig.count()
+    
+    produce_items = ProduceItem.objects.all()
+    products = paginate_queryset(request, produce_items, items_per_page=8)
 
     context = {
         'admincontact':contact,
         'blogs': blogs,
         'sub_form':subscribtion_form,
-        'message_count':message_count
+        'message_count':message_count,
+        'produce_items':products
     }
 
     return render(request, 'sajeksApp/blog.html', context)
@@ -168,12 +187,16 @@ def tag(request, tag_id):
     
     msg_countig = Contact.objects.filter(status =True)
     message_count = msg_countig.count()
+    
+    produce_items = ProduceItem.objects.all()
+    products = paginate_queryset(request, produce_items, items_per_page=8)
    
     context = {
        'blogs': blogs,
        'sub_form': subscribtion_form,
        'admincontact':contact,
-       'message_count':message_count
+       'message_count':message_count,
+       'produce_items':products
      }
     return render(request, 'sajeksApp/blog.html', context)
 
@@ -187,18 +210,24 @@ def videos(request):
     msg_countig = Contact.objects.filter(status =True)
     message_count = msg_countig.count()
     
+    produce_items = ProduceItem.objects.all()
+    products = paginate_queryset(request, produce_items, items_per_page=8)
     context = {
         'admincontact':contact,
         'homevideos':paging,
         'sub_form': subscribtion_form,
-        'message_count':message_count
+        'message_count':message_count,
+        'produce_items':products
         
     }
     return render(request, 'sajeksApp/videos/videos.html', context)
     
 
 def video_details(request, video_id):
-    video = get_object_or_404(Homevideo, id = video_id)
+    try:
+        video = get_object_or_404(Homevideo, id = video_id)
+    except Homevideo.DoesNotExist:
+        messages.error(request, 'This video does not exist anymore')
     subscribtion_form = SubscribtionForm()
     contact = adminContact.objects.first()
     
@@ -247,7 +276,7 @@ def about(request):
     chooseus = Whychooseus.objects.all()[0:3]
     choosepix = Whychooseuspix.objects.first()
 
-    produce_items = ProduceItem.objects.all()
+    produce_items = ProduceItem.objects.all()[:8]
     products = paginate_queryset(request, produce_items, items_per_page=50)
     contact = adminContact.objects.first()
     
@@ -268,9 +297,9 @@ def about(request):
 
 def produce_list_view(request):
     produce_items = ProduceItem.objects.all()
-    blog = Blog.objects.all()
+    blog = Blog.objects.all()[:3]
     subscribtion_form = SubscribtionForm()
-    products = paginate_queryset(request, produce_items, items_per_page=50)
+    products = paginate_queryset(request, produce_items, items_per_page=32)
     contact = adminContact.objects.first()
     
     msg_countig = Contact.objects.filter(status =True)
@@ -286,12 +315,13 @@ def produce_list_view(request):
 
 def contact(request):
     admin_info = adminContact.objects.first()
+    blog = Blog.objects.all()[0:3]
     form = ContactForm(request.POST)
 
     if request.method == 'POST':
         if form.is_valid:
             form.save()
-            messages.info(request, 'Thank you for contacting us. We will get back to you shortly.')
+            messages.info(request, 'Thank you for contacting us. We will get back to you shortly. Thank you! 👋')
             return redirect('contact')
         messages.error(request, 'Sorry your input is not correct')
         return redirect('contact')
@@ -308,6 +338,7 @@ def contact(request):
 
     context={
         'form':form,
+        'blogs':blog,
         'produce_items': products,
         'admincontact':admin_info,
         'sub_form': subscribtion_form,
@@ -412,7 +443,11 @@ def contact_list(request):
     return render(request, 'sajeksApp/contact_list.html', context)
 
 def contact_detail(request, contact_id):
-    contactid = get_object_or_404(Contact, pk = contact_id)
+    try:
+        contactid = get_object_or_404(Contact, pk = contact_id)
+    except Contact.DoesNotExist:
+        messages.error(request, 'This contact does not exist anymore')
+        return redirect('contact_list')
     
     msg_countig = Contact.objects.filter(status =True)
     message_count = msg_countig.count()
@@ -428,8 +463,10 @@ def contact_detail(request, contact_id):
     return render(request, 'sajeksApp/contact_detail.html', context)
 
 def mark_as_read(request, contact_id):
-    contactid = get_object_or_404(Contact, pk = contact_id)
-    
+    try:
+        contactid = get_object_or_404(Contact, pk = contact_id)
+    except Contact.DoesNotExist:
+        messages.error(request, 'already mark as read')
     if contactid.status == True:
         contactid.status = False
         contactid.save()
@@ -441,6 +478,106 @@ def delete_contact(request, contact_id):
     
     if user.is_superuser | user.is_staff:
         contactid.delete()
+        messages.info(request, f'You successfully deleted {contactid.name} message')
         return redirect('contact_list')
+    messages.error(request, 'You dont have permission to delete this message!')
+    return redirect('contact_list')
+    
+def gallery(request):
+    gallerys =  Gallary.objects.all()
+    msg_countig = Contact.objects.filter(status =True)
+    message_count = msg_countig.count()
+
+    subscribtion_form = SubscribtionForm()
+
+    context = {
+        'gallery':gallerys,
+        'sub_form':subscribtion_form,
+        'message_count':message_count,
+    }
         
+    return render(request, 'sajeksApp/gallery.html', context)  
+
+
+@staff_member_required
+def send_newsletter_view(request):
+    form = NewsletterForm(request.POST or None)
+    
+    if request.method == 'POST' and form.is_valid():
+        subject = form.cleaned_data.get('subject')
+        # Use HTML for the body if you plan on complex formatting later, 
+        # but for now, we'll keep it simple:
+        original_body = form.cleaned_data.get('body')
         
+        # 1. Fetch ALL active Subscriber OBJECTS
+        subscribers = Subscribtion.objects.filter(is_active=True)
+        
+        if not subscribers.exists():
+            messages.warning(request, "No active subscribers found to send the newsletter.")
+            return redirect('send_newsletter_view')
+
+        # 2. Prepare the email list
+        emails = []
+        
+        for subscriber in subscribers:
+            # Build the unique unsubscribe link for this user
+            unsubscribe_link = build_unsubscribe_link(request, subscriber)
+            
+            # Append the unsubscribe footer to the email body
+            footer = (
+                "\n\n-----------------------------------\n"
+                f"You are receiving this because you subscribed to our list.\n"
+                f"To instantly unsubscribe, click here:\n"
+                f"{unsubscribe_link}"
+            )
+            
+            full_body = original_body + footer
+            
+            # Create the EmailMessage instance
+            email_message = EmailMessage(
+                subject=subject,
+                body=full_body,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[subscriber.email], # Use the email from the object
+                # bcc=[settings.ADMIN_EMAIL], 
+            )
+            emails.append(email_message)
+
+        # 3. Send emails in bulk for efficiency (remains the same)
+        try:
+            # Note: We still use 'connection = None' for simplicity in this example.
+            connection = None 
+            sent_count = 0
+            
+            sent_count = connection.send_messages(emails) if connection else sum(e.send() for e in emails)
+
+            messages.success(request, f"Newsletter sent successfully to {sent_count} subscribers! 🎉")
+            return redirect('send_newsletter_view')
+
+        except Exception as e:
+            messages.error(request, f"An error occurred while sending the newsletter: {e}")
+            
+    context = {
+        'form': form, 
+        'subscribers_count': Subscribtion.objects.filter(is_active=True).count()
+    }
+    return render(request, 'sajeksApp/admin/newsletter_form.html', context)
+
+def unsubscribe_view(request, token):
+    try:
+        # 1. Look up the subscriber using the unique token
+        subscriber = Subscribtion.objects.get(token=token, is_active=True)
+        
+        # 2. Deactivate the subscriber
+        subscriber.is_active = False
+        subscriber.save()
+        
+        # 3. Success message for the user
+        messages.success(request, f"You have been successfully unsubscribed ({subscriber.email}). We're sorry to see you go!")
+        
+    except Subscribtion.DoesNotExist:
+        # If token is invalid or already unsubscribed
+        messages.error(request, "This link is invalid or you are already unsubscribed.")
+        
+    # Redirect to a simple thank you page or the homepage
+    return redirect('home') # Use your actual homepage URL name

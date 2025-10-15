@@ -5,53 +5,55 @@
 {% block content %}
  
     <!-- Page Title -->
-    <div class="page-title dark-background" data-aos="fade" style="background-image: url({% static 'sajeksApp/assets/img/page-title-bg.webp' %});">
-      <div class="container position-relative">
-        <h1>Blog</h1>
-      
-        <nav class="breadcrumbs">
-          <ol>
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li class="current">Blog</li>
-          </ol>
-        </nav>
-      </div>
-    </div><!-- End Page Title -->
+<div class="page-title dark-background" data-aos="fade" style="background-image: url({% static 'sajeksApp/assets/img/page-title-bg.webp' %});">
+    <div class="container position-relative">
+    <h1>Blog</h1>
+    
+    <nav class="breadcrumbs">
+        <ol>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        <li class="current">Blog</li>
+        </ol>
+    </nav>
+    </div>
+</div><!-- End Page Title -->
 
 
-  {% include 'sajeksApp/base/recent_blog.html' %}
+{% include 'sajeksApp/base/recent_blog.html' %}
 
-  <section id="blog-pagination" class="blog-pagination section">
-      <div class="container">
-          <div class="d-flex justify-content-center">
-              <ul>
-                  
-                  {# 1. Previous Button #}
-                  {% if blogs.has_previous %}
-                      <li><a href="?page={{ blogs.previous_page_number }}"><i class="bi bi-chevron-left"></i></a></li>
-                  {% else %}
-                      <li class="disabled"><a href="#"><i class="bi bi-chevron-left"></i></a></li>
-                  {% endif %}
-  
-                  {# 2. Page Numbers Loop #}
-                  {% for i in blogs.paginator.page_range %}
-                      {% if blogs.number == i %}
-                          <li class="active"><a href="#">{{ i }}</a></li>
-                      {% else %}
-                          <li><a href="?page={{ i }}">{{ i }}</a></li>
-                      {% endif %}
-                  {% endfor %}
-  
-                  {# 3. Next Button #}
-                  {% if blogs.has_next %}
-                      <li><a href="?page={{ blogs.next_page_number }}"><i class="bi bi-chevron-right"></i></a></li>
-                  {% else %}
-                      <li class="disabled"><a href="#"><i class="bi bi-chevron-right"></i></a></li>
-                  {% endif %}
-  
-              </ul>
-          </div>
-      </div>
-  </section>
-  
+<section id="blog-pagination" class="blog-pagination section">
+    <div class="container">
+        <div class="d-flex justify-content-center">
+            <ul>
+                
+                {# 1. Previous Button #}
+                {% if blogs.has_previous %}
+                    <li><a href="?page={{ blogs.previous_page_number }}"><i class="bi bi-chevron-left"></i></a></li>
+                {% else %}
+                    <li class="disabled"><a href="#"><i class="bi bi-chevron-left"></i></a></li>
+                {% endif %}
+
+                {# 2. Page Numbers Loop #}
+                {% for i in blogs.paginator.page_range %}
+                    {% if blogs.number == i %}
+                        <li class="active"><a href="#">{{ i }}</a></li>
+                    {% else %}
+                        <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+
+                {# 3. Next Button #}
+                {% if blogs.has_next %}
+                    <li><a href="?page={{ blogs.next_page_number }}"><i class="bi bi-chevron-right"></i></a></li>
+                {% else %}
+                    <li class="disabled"><a href="#"><i class="bi bi-chevron-right"></i></a></li>
+                {% endif %}
+
+            </ul>
+        </div>
+    </div>
+</section>
+{% include 'sajeksApp/base/product_base.html' %}
+{% include 'sajeksApp/base/pagination_base.html' %}  
+
 {% endblock %}

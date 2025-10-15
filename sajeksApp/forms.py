@@ -84,3 +84,8 @@ class TestimonialForm(forms.ModelForm):
             'message': forms.Textarea(attrs={'class': 'form-control', 'rows': 6, 'placeholder': 'Share your detailed experience here...'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}), # File inputs need form-control
         }
+
+
+class NewsletterForm(forms.Form):
+    subject = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'class': 'form-control'}))
+    body = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 10}))

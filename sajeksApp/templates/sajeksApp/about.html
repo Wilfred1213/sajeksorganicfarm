@@ -5,8 +5,7 @@
 {% block title %} About us {% endblock %}
 {% block content %}
 
- 
-
+  {% include 'sajeksApp/base/about_styling.html' %}
   <!-- Page Title -->
   <div class="page-title dark-background" data-aos="fade" style="background-image: url(assets/img/page-title-bg.webp);">
     <div class="container position-relative">
@@ -22,28 +21,47 @@
   </div><!-- End Page Title -->
 
   <!-- About 3 Section -->
-  <section id="about-3" class="about-3 section">
-
-    <div class="container">
-      <div class="row gy-4 justify-content-between align-items-center">
-        <div class="col-lg-6 order-lg-2 position-relative" data-aos="zoom-out">
-          <img src="{{abouts.pic.url}}" alt="Image" class="img-fluid">
-          <a href="{{about.embed_url}}" class="glightbox pulsating-play-btn">
+  <section id="about-us-hero" class="about-hero-section section p-0">
+    {# Full-width video/image container #}
+    <div class="video-banner-container position-relative">
+        <img src="{{abouts.pic.url}}" alt="Sajeks Organic Farm Video Banner" class="img-fluid w-100 object-fit-cover">
+        
+        {# Video Play Button centered over the banner image #}
+        <a href="{{abouts.embed_url}}" class="glightbox pulsating-play-btn-lg">
             <span class="play"><i class="bi bi-play-fill"></i></span>
-          </a>
-        </div>
-        <div class="col-lg-5 order-lg-1" data-aos="fade-up" data-aos-delay="100">
-          <h2 class="content-title mb-4">{{abouts.title}}</h2>
-          <p class="mb-4">
-            {{abouts.body|safe}}
-          </p>
-          
-
-          <p><a href="{% url 'about' %}" class="btn-cta">Get in touch</a></p>
-        </div>
-      </div>
+        </a>
     </div>
-  </section><!-- /About 3 Section -->
+
+    <div class="container my-5 py-lg-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10" data-aos="fade-up" data-aos-delay="100">
+                <div class="content-box text-center py-4">
+                    <span class="section-subtitle text-success mb-2">Our Story & Commitment</span>
+                    <h2 class="content-title display-5 fw-bold mb-4">{{abouts.title}}</h2>
+                    
+                    {# Main Body Text #}
+                    <div class="about-body-text mb-5 mx-auto" style="max-width: 800px;">
+                        {{abouts.body|safe}}
+                    </div>
+                    
+                    {# Key Feature List (Aesthetic highlight) #}
+                    <ul class="key-features list-unstyled d-flex flex-wrap justify-content-center gap-4 mb-5">
+                        <li data-aos="fade-up" data-aos-delay="200"><i class="fas fa-seedling text-success me-2"></i> <span>100% Organically Grown Produce</span></li>
+                        <li data-aos="fade-up" data-aos-delay="300"><i class="fas fa-hand-holding-heart text-success me-2"></i> <span>Commitment to Sustainable Farming</span></li>
+                        <li data-aos="fade-up" data-aos-delay="400"><i class="fas fa-truck text-success me-2"></i> <span>Farm-to-Table Freshness Guaranteed</span></li>
+                    </ul>
+
+                    {# Call-to-Action Button #}
+                    <p class="mt-4">
+                        <a href="{% url 'contact' %}" class="btn btn-success btn-lg px-5 shadow-sm">
+                            Discover Our Farm <i class="bi bi-arrow-right-circle-fill ms-2"></i>
+                        </a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section><!-- /About 3 Section -->
   {% include 'sajeksApp/base/about_experience_base.html' %}
 
   <!-- Team Section -->
@@ -61,9 +79,12 @@
                       <img src="{{ team.image.url }}" alt="{{ team.full_name }} Photo" class="img-fluid team-img">
                       
                       <div class="team-social-overlay">
-                          <a href="#"><span class="bi bi-facebook"></span></a>
+                        {% for urls in team.team_url_set.all %}
+                          {{ urls.url|safe}}
+                            {% comment %} <a href="#"><span class="bi bi-facebook"></span></a>
                           <a href="#"><span class="bi bi-twitter-x"></span></a>
-                          <a href="#"><span class="bi bi-linkedin"></span></a>
+                          <a href="#"><span class="bi bi-linkedin"></span></a> {% endcomment %}
+                        {% endfor %}
                       </div>
                   </div>
                   

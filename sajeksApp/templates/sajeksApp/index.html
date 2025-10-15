@@ -50,8 +50,9 @@
   <section id="services-2" class="services-2 section dark-background">
     <div class="container section-title " data-aos="fade-up" style="margin-bottom:2px;">
       <h2>Services</h2>
-      <p>Necessitatibus eius consequatur</p>
-    </div><div class="services-carousel-wrap">
+      <p>What we do</p>
+    </div>
+    <div class="services-carousel-wrap">
       <div class="container">
         <div class="swiper init-swiper">
           <script type="application/json" class="swiper-config">
@@ -95,8 +96,8 @@
               <div class="swiper-slide" style="height: 350px;">
                 <div class="service-item" style="position: relative; height: 100%; overflow: hidden;">
                   <div class="service-item-contents">
-                    <a href="#">
-                      <span class="service-item-category">We do</span>
+                    <a href="{% url 'service' %}">
+                      {% comment %} <span class="service-item-category">We do</span> {% endcomment %}
                       <h2 class="service-item-title">{{ service.title }}</h2>
                     </a>
                   </div>

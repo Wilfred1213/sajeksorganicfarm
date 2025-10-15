@@ -1,0 +1,148 @@
+<style>
+/* ================================================= */
+/* AESTHETIC ABOUT SECTION STYLES (Video Above Text) */
+/* ================================================= */
+
+.about-hero-section {
+    background-color: #fcfcfc;
+    overflow: hidden; /* Important to contain any overflow from image/video */
+}
+
+/* --- Video/Image Banner Container --- */
+.video-banner-container {
+    height: 550px; /* Fixed height for the banner. Adjust as needed. */
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+}
+
+.video-banner-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensures image covers the area without distortion */
+    object-position: center; /* Centers the image within the container */
+}
+
+/* --- Text Content Box --- */
+.content-box {
+    padding: 40px 0; /* Add padding around the text content */
+}
+
+/* Subtitle Styling */
+.section-subtitle {
+    display: inline-block; /* Changed to inline-block for better alignment in center */
+    font-size: 1rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    position: relative;
+    padding-bottom: 5px;
+}
+.section-subtitle::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 2px;
+    background: #28a745;
+    margin: 5px auto 0; /* Center the underline */
+}
+
+
+/* Main Title Styling */
+.content-title {
+    color: #1e3c1e; /* Deep green for organic theme */
+    line-height: 1.2;
+}
+
+/* Body Text Styling */
+.about-body-text {
+    font-size: 1.1rem;
+    color: #444;
+    line-height: 1.7;
+}
+
+/* Feature List (Icon Highlights) */
+.key-features {
+    padding: 0; /* Remove default ul padding */
+}
+.key-features li {
+    font-size: 1.05rem;
+    color: #333;
+    padding: 10px 15px; /* Add padding to list items */
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+.key-features li:hover {
+    transform: translateY(-3px); /* Subtle lift effect */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.key-features li i {
+    font-size: 1.2rem;
+}
+
+/* Large Video Play Button */
+.pulsating-play-btn-lg {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 90px; /* Slightly larger button */
+    height: 90px;
+    z-index: 10; /* Ensure it's above the image */
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.pulsating-play-btn-lg:hover {
+    transform: translate(-50%, -50%) scale(1.05); /* Grow slightly on hover */
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.pulsating-play-btn-lg .play {
+    width: 75px;
+    height: 75px;
+    background: #28a745; /* Green color */
+    border-radius: 50%;
+    color: #fff;
+    font-size: 36px; /* Larger icon */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse-grow 1.8s infinite; /* Slower, more impactful pulse */
+}
+
+@keyframes pulse-grow {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .video-banner-container {
+        height: 350px; /* Shorter height on mobile */
+    }
+    .pulsating-play-btn-lg {
+        width: 70px;
+        height: 70px;
+    }
+    .pulsating-play-btn-lg .play {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
+    }
+    .key-features {
+        flex-direction: column; /* Stack features on small screens */
+        align-items: center;
+    }
+}
+</style>
