@@ -3,7 +3,7 @@ from typing import Counter
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
-from sajeksApp.models import Carousel, Services,ProduceItem, Whychooseuspix, Team, Testimonial, Whychooseus,adminContact, Gallary, About_us, Homevideo, Blog, Comment, Category, Tags, Subscribtion
+from sajeksApp.models import Carousel, Services,StanleyIntro, ProduceItem, Whychooseuspix, Team, Testimonial, Whychooseus,adminContact, Gallary, About_us, Homevideo, Blog, Comment, Category, Tags, Subscribtion
 from sajeksApp.forms import CommentForm, SearchForm, NewsletterForm, Contact, SubscribtionForm, ContactForm, TestimonialForm
 from sajeksApp.subscription import subscribe_handler
 from sajeksApp.paginator import paginate_queryset
@@ -90,6 +90,7 @@ def blog_detail(request, blog_id):
         messages.info(request, 'This blog does not exist')
     recent_post = Blog.objects.all()
     tags = Tags.objects.all()
+    stanleyquote = StanleyIntro.objects.first()
 
     categories = Category.objects.annotate(post_count = Count('posts') )
     
@@ -143,7 +144,8 @@ def blog_detail(request, blog_id):
         'search_blog':search_blogs,
         'search_form':search_form,
         'sub_form': subscribtion_form,
-        'message_count':message_count
+        'message_count':message_count,
+        'stanley':stanleyquote
         
     }
     return render(request, 'sajeksApp/blog-details.html', context)
@@ -581,3 +583,4 @@ def unsubscribe_view(request, token):
         
     # Redirect to a simple thank you page or the homepage
     return redirect('home') # Use your actual homepage URL name
+

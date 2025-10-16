@@ -96,54 +96,7 @@
 
         
 
-        <!-- Blog Comments Section -->
-        {% comment %} <section id="blog-comments" class="blog-comments section">
-          <div class="container">
-              <h4 class="comments-count">{{ comment_count }} Comments</h4>
-      
-              {% for comment in comments %}
-                  <div id="comment-{{ comment.id }}" class="comment">
-                      <div class="d-flex">
-                          <div class="comment-img">
-                              {% if comment.img %}
-                                  <img src="{{ comment.img.url }}" alt="Comment Image">
-                              {% else %}
-                                  <img src="{% static 'sajeksApp/assets/img/mulching_1.webp' %}" alt="Default Avatar">
-                              {% endif %}
-                          </div>
-                          <div>
-                              <h5>
-                                  <a href="">{{ comment.full_name }}</a> 
-                                  <a href="#comment-form-{{ comment.id }}" class="reply-btn" data-parent-id="{{ comment.id }}"><i class="bi bi-reply-fill"></i> Reply</a>
-                              </h5>
-                              <time datetime="{{ comment.created_on|date:'c' }}">{{ comment.created_on|date:'M d, Y' }}</time>
-                              <p>{{ comment.content|safe }}</p>
-                          </div>
-                      </div>
-      
-                      {% for reply in comment.replies.all %}
-                          <div id="comment-reply-{{ reply.id }}" class="comment comment-reply">
-                              <div class="d-flex">
-                                  <div class="comment-img">
-                                      {% if reply.img %}
-                                          <img src="{{ reply.img.url }}" alt="Reply Image">
-                                      {% else %}
-                                          <img src="{% static 'sajeksApp/assets/img/mulching_1.webp' %}" alt="Default Avatar">
-                                      {% endif %}
-                                  </div>
-                                  <div>
-                                      <h5>
-                                          <a href="">{{ reply.full_name }}</a> 
-                                          <a href="#comment-form-{{ reply.id }}" class="reply-btn" data-parent-id="{{ reply.id }}"><i class="bi bi-reply-fill"></i> Reply</a>
-                                      </h5>
-                                      <time datetime="{{ reply.created_on|date:'c' }}">{{ reply.created_on|date:'M d, Y' }}</time>
-                                      <p>{{ reply.content|safe }}</p>
-                                  </div>
-                              </div>
-                          </div>{% endfor %}
-                  </div>{% endfor %}
-          </div>
-        </section> {% endcomment %}
+        
         <style>
             .comment.hidden-comment {
             display: none !important;
@@ -263,46 +216,7 @@
 
   {% endif %}
 
-  {% comment %} javascript for comment section {% endcomment %} 
-  {% comment %} <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // Find the hidden parent input field once to make it more efficient
-        const parentInput = document.getElementById('id_parent');
-        
-        // Find all the reply buttons
-        const replyButtons = document.querySelectorAll('.reply-btn');
-
-        replyButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                
-                // Get the data-parent-id from the button itself
-                const parentId = btn.getAttribute('data-parent-id');
-                
-                // Set the value of the hidden input field
-                if (parentInput) {
-                    parentInput.value = parentId;
-                }
-                
-                // Optional: Scroll to the form
-                const formSection = document.getElementById('comment-form');
-                if (formSection) {
-                    formSection.scrollIntoView({ behavior: 'smooth' });
-                }
-
-                // Optional: Update the form title to indicate a reply
-                const formTitle = document.querySelector('.comment-form-title');
-                const commentAuthor = btn.closest('.d-flex').querySelector('h5 a').innerText;
-                if (formTitle && commentAuthor) {
-                    formTitle.innerText = `Replying to Comment by ${commentAuthor}`;
-                }
-            });
-        });
-    });
-
-
-    
-</script>  {% endcomment %}
+  
 {% comment %} Javascript for comment section (Combined Logic) {% endcomment %} 
 <script>
     document.addEventListener('DOMContentLoaded', () => {

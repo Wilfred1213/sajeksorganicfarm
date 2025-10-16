@@ -380,6 +380,13 @@ class Team_url(models.Model):
     url = models.CharField(max_length=100, null=True, blank=True)
     team = models.ForeignKey(Team, verbose_name=("Social Handles for team members"), on_delete=models.CASCADE)
     
+    def __str__(self):
+        return self.url
+class StanleyIntro(models.Model):
+    full_name = models.CharField(max_length=50) 
+    url = models.ManyToManyField(Team_url) 
+    body = models.TextField(max_length=200) 
+    image = models.ImageField(upload_to='stanly_image/', null=True, blank=True,verbose_name="Stanly")
 
 class Gallary(models.Model):
     title =models.CharField(max_length=50, null=True, blank=True)

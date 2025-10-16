@@ -8,20 +8,23 @@
 
             <div class="d-flex flex-column align-items-center">
               <div class="d-flex align-items-center w-100">
-                <img src="{% static 'sajeksApp/assets/img/blog/blog-author.jpg' %}" class="rounded-circle flex-shrink-0" alt="">
+                <img src="{{stanley.image.url}}" class="rounded-circle flex-shrink-0" alt="">
                 <div>
-                  <h4>Jane Smith</h4>
+                  <h4>{{stanley.full_name}}</h4>
                   <div class="social-links">
-                    <a href="https://x.com/#"><i class="bi bi-twitter-x"></i></a>
+                    {% for infor in stanley.url.all %}
+                    {{infor|safe}}
+                    {% comment %} <a href="https://x.com/#"><i class="bi bi-twitter-x"></i></a>
                     <a href="https://facebook.com/#"><i class="bi bi-facebook"></i></a>
                     <a href="https://instagram.com/#"><i class="biu bi-instagram"></i></a>
-                    <a href="https://instagram.com/#"><i class="biu bi-linkedin"></i></a>
+                    <a href="https://instagram.com/#"><i class="biu bi-linkedin"></i></a> {% endcomment %}
+                    {% endfor %}
                   </div>
                 </div>
               </div>
 
               <p>
-                Itaque quidem optio quia voluptatibus dolorem dolor. Modi eum sed possimus accusantium. Quas repellat voluptatem officia numquam sint aspernatur voluptas. Esse et accusantium ut unde voluptas.
+                {{stanley.body|safe}}
               </p>
 
             </div>

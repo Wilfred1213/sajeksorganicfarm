@@ -2,7 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.core.mail import send_mail
 from django.conf import settings
-from .models import Contact, Gallary, Blog, ProduceItem
+from .models import Contact, Gallary, Blog,Team, ProduceItem
 from django.core.mail import EmailMessage
 
 @receiver(post_save, sender=Contact)
@@ -58,5 +58,17 @@ def gallery_auto_save(sender, instance, created, **kwargs):
     if created:
         blog_image = instance.image
         Gallary.objects.get_or_create(image = blog_image, title = instance.title)
+        
+@receiver(post_save, sender=ProduceItem)
+def gallery_auto_save(sender, instance, created, **kwargs):
+    if created:
+        blog_image = instance.image
+        Gallary.objects.get_or_create(image = blog_image, title = instance.title)
+        
+@receiver(post_save, sender=Team)
+def gallery_team_members_auto_save(sender, instance, created, **kwargs):
+    if created:
+        team_image = instance.image
+        Gallary.objects.get_or_create(image = team_image)
 
 

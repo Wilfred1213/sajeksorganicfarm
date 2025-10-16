@@ -12,6 +12,7 @@ admin.site.register(Tags)
 admin.site.register(Subscribtion)
 admin.site.register(Team)
 admin.site.register(Gallary)
+admin.site.register(StanleyIntro)
 
 @admin.register(Homevideo)
 class HomeVideosAdmin(admin.ModelAdmin):
