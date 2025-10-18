@@ -5,6 +5,11 @@ from django.urls import reverse
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site # Import this to get the domain safely
 
+from django.db.models import Q # Import Q objects for complex lookups
+from .models import ProduceItem # Assuming this is your product model
+
+
+
 def testimonial_form_processor(request):
     """Makes TestimonialForm available globally."""
     # We only create a BOUND form if the user just submitted it
@@ -33,3 +38,33 @@ def build_unsubscribe_link(request, subscriber):
     
     # Construct the full absolute URL
     return f"{protocol}://{domain}{relative_url}"
+
+
+
+# sajeksApp/context_processors.py
+
+
+def global_products(request):
+    """
+    Makes a list of available produce items globally available in the template context.
+    """
+    
+    # Check for a search query (q) parameter
+    query = request.GET.get('q')
+    
+    # Start with all available items
+    items = ProduceItem.objects.filter(is_available=True)
+    
+    # If a search query is present, filter the results.
+    # Note: This means the search bar will work on every page where the products are displayed!
+    if query:
+        items = items.filter(
+            Q(title__icontains=query) | 
+            Q(description__icontains=query)
+        ).distinct()
+
+    # The key in the dictionary becomes the variable name in your templates
+    return {
+        'global_produce_items': items,
+        'search_query': query if query else '' # Optionally expose the query
+    }

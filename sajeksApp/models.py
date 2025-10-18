@@ -22,6 +22,9 @@ class Services(models.Model):
     
     def __str__(self):
         return self.title
+class Logo(models.Model):
+    image = models.ImageField(upload_to = 'logo_img', help_text="this is the image to use on logo")
+    
 class Whychooseus(models.Model):
     title =models.CharField(max_length=100, null= True, help_text="The title of the Why choose us.")
     icon=  models.CharField(max_length=500, null=True, help_text="the icon to be display in safe pipe")
@@ -365,7 +368,7 @@ class Testimonial(models.Model):
         return f"{self.full_name} - {self.rating} stars"
     
     class Meta:
-        ordering = ['-created_at']
+        ordering = ['-is_approved']
     
 class Team(models.Model):
     full_name =models.CharField(max_length=50)

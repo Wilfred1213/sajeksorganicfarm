@@ -5,9 +5,13 @@
         <div class="container section-title" data-aos="fade-up">
             <h2>WHAT OUR CLIENTS SAY</h2>
             <p>Hear directly from the farmers and partners we've helped succeed.</p>
+            {% if user.is_superuser or user.is_staff %}
+            <p class="bg-dark text-white">You have <b class="text-danger"> {{ unapproved_count }}</b> Unapproved Testimonials. Go to admin and approved!</p>
+            {% endif %}
         </div><div class="testimonial-wrap">
       <div class="container">
           <div class="row g-4 justify-content-center"> 
+
               
               {% for testimonial in testimonys %}
               <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|mul:100 }}">
@@ -54,6 +58,7 @@
                   </div>
               </div>
               {% endfor %}
+              
           </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ from typing import Counter
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.contrib import messages
-from sajeksApp.models import Carousel, Services,StanleyIntro, ProduceItem, Whychooseuspix, Team, Testimonial, Whychooseus,adminContact, Gallary, About_us, Homevideo, Blog, Comment, Category, Tags, Subscribtion
+from sajeksApp.models import Carousel, Services,Logo, StanleyIntro, ProduceItem, Whychooseuspix, Team, Testimonial, Whychooseus,adminContact, Gallary, About_us, Homevideo, Blog, Comment, Category, Tags, Subscribtion
 from sajeksApp.forms import CommentForm, SearchForm, NewsletterForm, Contact, SubscribtionForm, ContactForm, TestimonialForm
 from sajeksApp.subscription import subscribe_handler
 from sajeksApp.paginator import paginate_queryset
@@ -30,6 +30,8 @@ def home(request):
     produce_items = ProduceItem.objects.all()
     products = paginate_queryset(request, produce_items, items_per_page=8)
     
+    logos = Logo.objects.first()
+    
     user = request.user
 
     blog = Blog.objects.all()[0:3]
@@ -52,7 +54,8 @@ def home(request):
         'sub_form': subscribtion_form,
         'produce_items': products,
         'message_count':message_count,
-        'user':user
+        'user':user,
+        'logo':logos
     }
     return render(request, 'sajeksApp/index.html', context)
 
@@ -71,19 +74,23 @@ def blog(request):
 
     produce_items = ProduceItem.objects.all()
     products = paginate_queryset(request, produce_items, items_per_page=8)
+    
+    logos = Logo.objects.first()
     context ={
         'admincontact':contact,
         'blogs':blogs,
         'sub_form':subscribtion_form,
         'message_count':message_count,
 
-        'produce_items':products
+        'produce_items':products,
+        'logo':logos
     }
     return render(request, 'sajeksApp/blog.html', context)
 
 
 
 def blog_detail(request, blog_id):
+    logos = Logo.objects.first()
     try:
         blog = get_object_or_404(Blog, id=blog_id)
     except Blog.DoesNotExist:
@@ -145,12 +152,14 @@ def blog_detail(request, blog_id):
         'search_form':search_form,
         'sub_form': subscribtion_form,
         'message_count':message_count,
-        'stanley':stanleyquote
+        'stanley':stanleyquote,
+        'logo':logos
         
     }
     return render(request, 'sajeksApp/blog-details.html', context)
 
 def categories(request, category_id):
+    logos = Logo.objects.first()
     try:
         category = Category.objects.get(name = category_id)
     except Category.DoesNotExist:
@@ -173,7 +182,8 @@ def categories(request, category_id):
         'blogs': blogs,
         'sub_form':subscribtion_form,
         'message_count':message_count,
-        'produce_items':products
+        'produce_items':products,
+        'logo':logos
     }
 
     return render(request, 'sajeksApp/blog.html', context)
@@ -192,18 +202,19 @@ def tag(request, tag_id):
     
     produce_items = ProduceItem.objects.all()
     products = paginate_queryset(request, produce_items, items_per_page=8)
-   
+    logos = Logo.objects.first()
     context = {
        'blogs': blogs,
        'sub_form': subscribtion_form,
        'admincontact':contact,
        'message_count':message_count,
-       'produce_items':products
+       'produce_items':products,
+       "logo":logos
      }
     return render(request, 'sajeksApp/blog.html', context)
 
 def videos(request):
-    
+    logos = Logo.objects.first()
     homevideo = Homevideo.objects.all()
     contact = adminContact.objects.first()    
     paging = paginate_queryset(request, homevideo, items_per_page=9)
@@ -219,13 +230,15 @@ def videos(request):
         'homevideos':paging,
         'sub_form': subscribtion_form,
         'message_count':message_count,
-        'produce_items':products
+        'produce_items':products,
+        'logo':logos
         
     }
     return render(request, 'sajeksApp/videos/videos.html', context)
     
 
 def video_details(request, video_id):
+    logos = Logo.objects.first()
     try:
         video = get_object_or_404(Homevideo, id = video_id)
     except Homevideo.DoesNotExist:
@@ -239,12 +252,14 @@ def video_details(request, video_id):
         'homevideos':video,
         'sub_form': subscribtion_form,
         'admincontact':contact,
-        'message_count':message_count
+        'message_count':message_count,
+        'logo':logos
     }
     
     return render(request, 'sajeksApp/videos/video_detail.html', context)
 
 def service(request):
+    logos = Logo.objects.first()
     service = Services.objects.all()
     chooseus = Whychooseus.objects.all()[0:3]
     choosepix = Whychooseuspix.objects.first()
@@ -266,11 +281,13 @@ def service(request):
         'produce_items':products,
         'homevideos':recent_videos,
         'admincontact':contact,
-        'message_count':message_count
+        'message_count':message_count,
+        'logo':logos
     }
     return render(request, 'sajeksApp/services.html', context)
 
 def about(request):
+    logos = Logo.objects.first()
     about = About_us.objects.first()
     subscribtion_form = SubscribtionForm()
     team = Team.objects.all()
@@ -278,13 +295,14 @@ def about(request):
     chooseus = Whychooseus.objects.all()[0:3]
     choosepix = Whychooseuspix.objects.first()
 
-    produce_items = ProduceItem.objects.all()[:8]
-    products = paginate_queryset(request, produce_items, items_per_page=50)
+    produce_items = ProduceItem.objects.all()
+    products = paginate_queryset(request, produce_items, items_per_page=8)
     contact = adminContact.objects.first()
     
     msg_countig = Contact.objects.filter(status =True)
     message_count = msg_countig.count()
     context={
+        'logo':logos,
         'chooses':chooseus,
         'choosepix':choosepix,
         'abouts':about,
@@ -298,6 +316,12 @@ def about(request):
 
 
 def produce_list_view(request):
+    query = request.GET.get('q') 
+    
+    items = ProduceItem.objects.filter(Q(title__icontains=query)| Q(description__icontains=query))if query else None
+    
+    
+    logos = Logo.objects.first()
     produce_items = ProduceItem.objects.all()
     blog = Blog.objects.all()[:3]
     subscribtion_form = SubscribtionForm()
@@ -311,7 +335,10 @@ def produce_list_view(request):
         'produce_items': products, 
         'blogs':blog,
         'sub_form': subscribtion_form,
-        'message_count':message_count
+        'message_count':message_count,
+        'logo':logos,
+        'items_search':items,
+        'query':query
     }
     return render(request, 'sajeksApp/product_list.html', context)
 
@@ -336,6 +363,7 @@ def contact(request):
     
     msg_countig = Contact.objects.filter(status =True)
     message_count = msg_countig.count()
+    logos = Logo.objects.first()
     
 
     context={
@@ -344,13 +372,16 @@ def contact(request):
         'produce_items': products,
         'admincontact':admin_info,
         'sub_form': subscribtion_form,
-        'message_count':message_count
+        'message_count':message_count,
+        'logo':logos
     }
         
     return render(request,'sajeksApp/contact.html', context )
 
 def testimonial(request):
-    testimony = Testimonial.objects.all()
+    logos = Logo.objects.first()
+    testimony = Testimonial.objects.filter(is_approved = True)
+    unapproved_testimonial = Testimonial.objects.filter(is_approved = False).count()
     blog = Blog.objects.all()[0:3]
     recent_videos = Homevideo.objects.all()[:3]
     contact = adminContact.objects.first()
@@ -359,19 +390,26 @@ def testimonial(request):
     
     msg_countig = Contact.objects.filter(status =True)
     message_count = msg_countig.count()
+    
+    
+        
     context ={
         'admincontact':contact,
         'testimonys':testimonial_pagination,
         'blogs':blog,
         'homevideos':recent_videos,
         'sub_form': subscribtion_form,
-        'message_count':message_count
+        'message_count':message_count,
+        'unapproved_count':unapproved_testimonial,
+        'logo':logos
     }
     return render(request,'sajeksApp/testimonials.html', context )
 
 
 def submit_testimonial_view(request):
     contact = adminContact.objects.first()
+    logos = Logo.objects.first()
+    
     """Handles the submission of the testimonial form via AJAX or standard POST."""
     
     # Check if the request is AJAX (from the JavaScript fetch call)
@@ -422,6 +460,7 @@ def submit_testimonial_view(request):
     subscribtion_form = SubscribtionForm()
     
     context = {
+        'logo':logos,
         'form': form,
         'admincontact':contact,
         'message_count':message_count,
@@ -430,21 +469,26 @@ def submit_testimonial_view(request):
     return render(request, 'sajeksApp/testimonial_form.html', context)
 
 def contact_list(request):
+    logos = Logo.objects.first()
     contacts = Contact.objects.all().order_by('-posted_on')
     unread_count= Contact.objects.filter(status = True).count()
     
     msg_countig = Contact.objects.filter(status =True)
     message_count = msg_countig.count()
     subscribtion_form = SubscribtionForm()
+    admincontact = adminContact.objects.first()
     context ={
         'contacts':contacts,
         'unread_count':unread_count,
         'message_count':message_count,
-        'sub_form':subscribtion_form
+        'sub_form':subscribtion_form,
+        'admincontact':admincontact,
+        'logo':logos
     }
     return render(request, 'sajeksApp/contact_list.html', context)
 
 def contact_detail(request, contact_id):
+    logos = Logo.objects.first()
     try:
         contactid = get_object_or_404(Contact, pk = contact_id)
     except Contact.DoesNotExist:
@@ -455,11 +499,13 @@ def contact_detail(request, contact_id):
     message_count = msg_countig.count()
     
     subscribtion_form = SubscribtionForm()
-    
+    contact = adminContact.objects.first()
     context = {
         'msg':contactid,
         'message_count':message_count,
-        'sub_form':subscribtion_form
+        'sub_form':subscribtion_form,
+        'admincontact':contact,
+        'logo':logos
               
     }
     return render(request, 'sajeksApp/contact_detail.html', context)
@@ -486,16 +532,20 @@ def delete_contact(request, contact_id):
     return redirect('contact_list')
     
 def gallery(request):
+    logos = Logo.objects.first()
     gallerys =  Gallary.objects.all()
     msg_countig = Contact.objects.filter(status =True)
     message_count = msg_countig.count()
 
     subscribtion_form = SubscribtionForm()
+    contact = adminContact.objects.first()
 
     context = {
         'gallery':gallerys,
         'sub_form':subscribtion_form,
         'message_count':message_count,
+        'admincontact':contact,
+        'logo':logos
     }
         
     return render(request, 'sajeksApp/gallery.html', context)  
@@ -503,7 +553,11 @@ def gallery(request):
 
 @staff_member_required
 def send_newsletter_view(request):
+    logos = Logo.objects.first()
+    contact = adminContact.objects.first()
     form = NewsletterForm(request.POST or None)
+    msg_countig = Contact.objects.filter(status =True)
+    message_count = msg_countig.count()
     
     if request.method == 'POST' and form.is_valid():
         subject = form.cleaned_data.get('subject')
@@ -558,10 +612,14 @@ def send_newsletter_view(request):
 
         except Exception as e:
             messages.error(request, f"An error occurred while sending the newsletter: {e}")
-            
+    subscribtion_form = SubscribtionForm()      
     context = {
         'form': form, 
-        'subscribers_count': Subscribtion.objects.filter(is_active=True).count()
+        'sub_form':subscribtion_form,
+        'subscribers_count': Subscribtion.objects.filter(is_active=True).count(),
+        'admincontact':contact,
+        'message_count':message_count,
+        'logo':logos
     }
     return render(request, 'sajeksApp/admin/newsletter_form.html', context)
 
@@ -583,4 +641,8 @@ def unsubscribe_view(request, token):
         
     # Redirect to a simple thank you page or the homepage
     return redirect('home') # Use your actual homepage URL name
+
+    
+    
+    
 

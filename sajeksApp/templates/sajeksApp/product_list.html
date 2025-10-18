@@ -1,11 +1,11 @@
 {% extends 'sajeksApp/base/base.html' %}
 {% load static %}
-
+{% load mathfilters %}
 
 {% block title %} Our Fresh Produce {% endblock %}
 
 {% block content %}
-<main class="main">
+
 
     <div class="page-title dark-background" data-aos="fade" style="background-image: url({% static 'assets/img/page-title-bg.webp' %});">
       <div class="container position-relative">
@@ -19,9 +19,92 @@
       </div>
     </div>
 
+    {% comment %} search form {% endcomment %}
+    <div class="container mb-5 mt-5" data-aos="fade-up">
+          <div class="row justify-content-center">
+              <div class="col-lg-8">
+                  <form action="{% url 'produce_list_view' %}" method="GET" class="d-flex shadow-sm rounded-pill p-1 border">
+                      <input type="search" 
+                          class="form-control border-0 rounded-start-pill py-2" 
+                          placeholder="Search for a vegetable, e.g., 'Tomato' or 'Carrot'" 
+                          name="q" 
+                          aria-label="Search Products"
+                          value="{{ request.GET.q|default:'' }}">
+                          
+                      <button class="btn btn-success rounded-pill ms-2" type="submit" style="min-width: 100px;">
+                          <i class="bi bi-search me-1"></i> Search
+                      </button>
+                  </form>
+              </div>
+          </div>
+      </div>
+
+    {% if items_search %}
+    <section id="produce-catalog" class="services section">
+        <div class="container">
+            
+            {% comment %} Display logic for results or no results {% endcomment %}
+            
+            
+                <div class="row g-4"> 
+                    {% for product in items_search %}
+                    <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="{{ forloop.counter0|mul:100 }}">
+                        <div class="product-item product-card h-100 shadow-sm border rounded">
+                            
+                            <div class="product-image-container position-relative overflow-hidden" style="height: 200px;">
+                                {% if product.is_available %}
+                                    <span class="badge bg-success position-absolute top-0 end-0 m-2 z-index-1" style="z-index: 10;">IN STOCK</span>
+                                {% else %}
+                                    <span class="badge bg-danger position-absolute top-0 end-0 m-2 z-index-1" style="z-index: 10;">OUT OF STOCK</span>
+                                {% endif %}
+                                <a href="{{ product.image.url }}" class="glightbox" data-gallery="produceGallery" data-caption="{{ product.title }}">
+                                    <img src="{{ product.image.url }}" alt="{{ product.title }}" class="img-fluid w-100 h-100" style="object-fit: cover; cursor: pointer; transition: transform 0.3s ease;">
+                                    <div class="position-absolute w-100 h-100 top-0 start-0 d-flex align-items-center justify-content-center" style="background: rgba(0, 0, 0, 0.2); opacity: 0; transition: opacity 0.3s ease;">
+                                        <i class="fas fa-search-plus text-white display-6"></i>
+                                    </div>
+                                </a>
+                            </div>
+                            
+                            <div class="product-item-content p-3 d-flex flex-column">
+                                <h3 class="product-heading h5 mb-2">{{ product.title }}</h3>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    {% if product.price %}
+                                        <p class="h4 text-success m-0">KSH{{ product.price }}/{{product.unit_of_sale}}</p>
+                                    {% endif %}
+                                </div>
+                                <p class="text-muted small mb-3 flex-grow-1">
+                                    {{ product.description|truncatewords:10 }}
+                                </p>
+                                {% if product.is_available %}
+                                    <a href="{% url 'contact' %}" class="btn btn-primary btn-sm w-100 mt-auto">Contact us</a>
+                                {% else %}
+                                    <button class="btn btn-secondary btn-sm w-100 mt-auto" disabled>Notify When Available</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                
+
+            {% else %}
+            {% if query%}
+                <div class="container text-center py-5">
+                        
+                        <h3 class="text-muted">Product Catalog Empty</h3>
+                        <p class="lead">There are currently no available {{ query }}  in our fresh produce catalog.</p>
+                      
+                </div>
+            {% endif %}
+            
+
+        </div>
+    </section>
+    {% endif %}
     {% include 'sajeksApp/base/product_base.html' %}
     {% include 'sajeksApp/base/pagination_base.html' %}
     {% include 'sajeksApp/base/recent_blog.html' %}
     
-  </main>
+  
 {% endblock %}

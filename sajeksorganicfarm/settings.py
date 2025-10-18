@@ -130,6 +130,7 @@ TEMPLATES = [
 
                  # --- REGISTER YOUR CUSTOM PROCESSOR HERE ---
                 'sajeksApp.context_processors.testimonial_form_processor',
+                'sajeksApp.context_processors.global_products',
             ],
         },
     },

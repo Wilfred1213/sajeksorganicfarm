@@ -13,6 +13,7 @@ admin.site.register(Subscribtion)
 admin.site.register(Team)
 admin.site.register(Gallary)
 admin.site.register(StanleyIntro)
+admin.site.register(Logo)
 
 @admin.register(Homevideo)
 class HomeVideosAdmin(admin.ModelAdmin):
@@ -49,7 +50,7 @@ class adminContact(admin.ModelAdmin):
 
 @admin.register(Testimonial)
 class TestimonialContact(admin.ModelAdmin):
-    list_display = ('full_name', 'message', 'image')
+    list_display = ('full_name', 'message', 'image', 'is_approved')
 
 @admin.register(Team_url)
 class TeamUrlAdmin(admin.ModelAdmin):
