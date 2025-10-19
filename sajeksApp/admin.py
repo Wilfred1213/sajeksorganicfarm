@@ -1,6 +1,9 @@
 from django.contrib import admin
 from sajeksApp.models import *
 
+admin.site.site_header = "Sajeks Organic Farm Administration"
+admin.site.site_title = "Sajeks Organic Farm Portal"
+
 # Register your models here.
 admin.site.register(Carousel)
 admin.site.register(Category)
