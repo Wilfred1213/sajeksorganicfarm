@@ -1,12 +1,48 @@
+<section id="blog-pagination" class="blog-pagination section">
+    <div class="container">
+        <div class="d-flex justify-content-center">
+            <ul>
+                
+                {# 1. Previous Button - FIX 1: Add the Anchor #}
+                {% if produce_items.has_previous %}
+                    <li><a href="?page={{ produce_items.previous_page_number }}#produce-catalog"><i class="bi bi-chevron-left"></i></a></li>
+                {% else %}
+                    <li class="disabled"><a href="#"><i class="bi bi-chevron-left"></i></a></li>
+                {% endif %}
+ 
+                {# 2. Page Numbers Loop #}
+                {% for i in produce_items.paginator.page_range %}
+                    {% if produce_items.number == i %}
+                        <li class="active"><a href="#produce-catalog">{{ i }}</a></li>
+                    {% else %}
+                        {# FIX 2: Add the Anchor to all numbered pages #}
+                        <li><a href="?page={{ i }}#produce-catalog">{{ i }}</a></li>
+                    {% endif %}
+                {% endfor %}
+ 
+                {# 3. Next Button - This one was already correct in your last post #}
+                {% if produce_items.has_next %}
+                    <li><a href="?page={{ produce_items.next_page_number }}#produce-catalog"><i class="bi bi-chevron-right"></i></a></li>
+                {% else %}
+                    <li class="disabled"><a href="#"><i class="bi bi-chevron-right"></i></a></li>
+                {% endif %}
+ 
+            </ul>
+        </div>
+    </div>
+</section>
+
+
+
 {% comment %} pagination {% endcomment %}
-    <section id="blog-pagination" class="blog-pagination section">
+    {% comment %} <section id="blog-pagination" class="blog-pagination section">
       <div class="container">
           <div class="d-flex justify-content-center">
               <ul>
                   
                   {# 1. Previous Button #}
                   {% if produce_items.has_previous %}
-                      <li><a href="?page={{ produce_items.previous_page_number }}"><i class="bi bi-chevron-left"></i></a></li>
+                      <li><a href="?page={{ produce_items.previous_page_number }}#produce-catalog"><i class="bi bi-chevron-left"></i></a></li>
                   {% else %}
                       <li class="disabled"><a href="#"><i class="bi bi-chevron-left"></i></a></li>
                   {% endif %}
@@ -14,7 +50,7 @@
                   {# 2. Page Numbers Loop #}
                   {% for i in produce_items.paginator.page_range %}
                       {% if produce_items.number == i %}
-                          <li class="active"><a href="#">{{ i }}</a></li>
+                          <li class="active"><a href="#produce-catalog">{{ i }}</a></li>
                       {% else %}
                           <li><a href="?page={{ i }}">{{ i }}</a></li>
                       {% endif %}
@@ -22,7 +58,7 @@
   
                   {# 3. Next Button #}
                   {% if produce_items.has_next %}
-                      <li><a href="?page={{ produce_items.next_page_number }}"><i class="bi bi-chevron-right"></i></a></li>
+                      <li><a href="?page={{ produce_items.next_page_number }}#produce-catalog"><i class="bi bi-chevron-right"></i></a></li>
                   {% else %}
                       <li class="disabled"><a href="#"><i class="bi bi-chevron-right"></i></a></li>
                   {% endif %}
@@ -30,4 +66,4 @@
               </ul>
           </div>
       </div>
-    </section>
+    </section> {% endcomment %}
