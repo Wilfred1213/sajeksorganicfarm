@@ -196,7 +196,7 @@ class HomePage(models.Model):
 # models.py for a 'farm' app
 class Subscribtion(models.Model):
     is_active = models.BooleanField(default=True)
-    email = models.EmailField(max_length=100)
+    email = models.EmailField(max_length=100, verbose_name='Email Address')
 
     posted_on = models.DateTimeField(auto_now_add=True, null=True)
     
@@ -368,7 +368,7 @@ class Testimonial(models.Model):
         return f"{self.full_name} - {self.rating} stars"
     
     class Meta:
-        ordering = ['-is_approved']
+        ordering = ['-is_approved', '-created_at']
     
 class Team(models.Model):
     full_name =models.CharField(max_length=50)
@@ -396,6 +396,14 @@ class Gallary(models.Model):
     image = models.ImageField(upload_to='gallary_images/', null=True, blank=True,verbose_name="Product Image")
 
 class QuoteByCEO(models.Model):
+    full_name = models.CharField(max_length=50)
+    image = models.ImageField(upload_to='CEO_images/')
+    body =models.TextField(max_length=250)
+    
+    def __str__(self):
+        return self.full_name
+    
+class QuoteByPresident(models.Model):
     full_name = models.CharField(max_length=50)
     image = models.ImageField(upload_to='CEO_images/')
     body =models.TextField(max_length=250)
